@@ -3756,5 +3756,6 @@ AssetOrigin:
   productId: 336410
   packageName: 2D Fantasy Tileset
   packageVersion: 1.1.0
-  assetPath: Assets/SmallScaleInt/Fantasy kingdom Tileset/Characters/Enemy 1/Idle3.png
+  assetPath: Assets/ThirdParty/SmallScaleInt/Fantasy kingdom Tileset/Characters/Enemy
+    1/Idle3.png
   uploadId: 853508

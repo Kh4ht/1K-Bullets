@@ -3768,5 +3768,6 @@ AssetOrigin:
   productId: 336410
   packageName: 2D Fantasy Tileset
   packageVersion: 1.1.0
-  assetPath: Assets/SmallScaleInt/Fantasy kingdom Tileset/Characters/Enemy 2/Run.png
+  assetPath: Assets/ThirdParty/SmallScaleInt/Fantasy kingdom Tileset/Characters/Enemy
+    2/Run.png
   uploadId: 853508

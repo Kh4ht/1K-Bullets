@@ -44,6 +44,7 @@ public class Bullet : MonoBehaviour, IUpdateObserver
 
         Rb2d.gravityScale = 0;
         Coll2d.isTrigger = true;
+        GetComponent<SpriteRenderer>().sortingLayerName = GameSortingLayers.BULLETS;
     }
 
     private void OnEnable()
