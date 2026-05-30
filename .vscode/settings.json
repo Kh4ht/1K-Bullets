@@ -67,5 +67,17 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "1K Bullets.slnx"
+    "dotnet.defaultSolution": "1K Bullets.slnx",
+    "cSpell.words": [
+        "Behaviour",
+        "Crtl",
+        "Dont",
+        "Mathf",
+        "respawned",
+        "Rigidbody",
+        "Scriptable",
+        "UGUI",
+        "Unregisterd",
+        "WASD"
+    ]
 }
