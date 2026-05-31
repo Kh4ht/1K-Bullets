@@ -7,10 +7,11 @@ public class PlayerMove : KHIUnityMethods
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public PlayerMove(Player newOwner, float newSpeed)
+    public PlayerMove(Player newOwner, Rigidbody2D rigidbody2D, float newSpeed)
     {
         _owner = newOwner;
         Speed = newSpeed;
+        _rb2d = rigidbody2D;
     }
 
     private readonly Player _owner;
@@ -19,6 +20,8 @@ public class PlayerMove : KHIUnityMethods
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    private readonly Rigidbody2D _rb2d;
 
     public float Speed { get; private set; }
     public Vector2 Dir { get; private set; }
@@ -79,11 +82,18 @@ public class PlayerMove : KHIUnityMethods
             Dir = new Vector2(-1, Dir.y);
         else
             Dir = new Vector2(0, Dir.y);
+
+        _owner.PAnimator.PlayerDir(Helper.Vector2ToDir(Dir));
+
+        if (Dir != Vector2.zero)
+            _owner.PAnimator.PlayerRunning(true);
+        else
+            _owner.PAnimator.PlayerRunning(false);
     }
 
     private void Move()
     {
-        _owner.Rb2d.linearVelocity = (GameConst.DEFAULT_SPEED + Speed)
+        _rb2d.linearVelocity = (GameConst.DEFAULT_SPEED + Speed)
             * Time.fixedDeltaTime
             * Dir.normalized;
     }

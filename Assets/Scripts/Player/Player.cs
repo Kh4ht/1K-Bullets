@@ -10,8 +10,8 @@ public class Player : MonoBehaviour, IUpdateObserver
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     // Components
-    public Rigidbody2D Rb2d { get; private set; }
-    public Animator Animator { get; private set; }
+    private Rigidbody2D _rb2d;
+    private Animator _animator;
 
     // Systems
     public PlayerMove PMove { get; private set; }
@@ -23,7 +23,7 @@ public class Player : MonoBehaviour, IUpdateObserver
 
     // Getters
     public PlayerData Data => _data;
-    public GameObject EngineFireVFX => _engineFireVFX;
+    // public GameObject EngineFireVFX => _engineFireVFX;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -31,7 +31,7 @@ public class Player : MonoBehaviour, IUpdateObserver
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     [SerializeField] private PlayerData _data;
-    [SerializeField] private GameObject _engineFireVFX;
+    // [SerializeField] private GameObject _engineFireVFX;
     [SerializeField] private Transform _bulletSpawnPoint;
 
     #endregion
@@ -41,9 +41,10 @@ public class Player : MonoBehaviour, IUpdateObserver
 
     private void Reset()
     {
-        Rb2d = GetComponent<Rigidbody2D>();
+        _rb2d = GetComponent<Rigidbody2D>();
 
-        Rb2d.gravityScale = 0;
+        _rb2d.gravityScale = 0;
+        _rb2d.freezeRotation = true;
         tag = GameTags.PLAYER;
     }
 
@@ -63,15 +64,16 @@ public class Player : MonoBehaviour, IUpdateObserver
 
     private void Awake()
     {
-        Rb2d = GetComponent<Rigidbody2D>();
-        Animator = GetComponent<Animator>();
+        _rb2d = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
 
         _systems.AddRange(new KHIUnityMethods[]
         {
-            PAnimator = new(this),
+            PAnimator = new(this, animator: _animator),
             PHealth = new(this,
                           maxHealth: Data.DefaultMaxHealth),
             PMove = new(this,
+                        rigidbody2D: _rb2d,
                         newSpeed: Data.DefaultMoveSpeed),
             PMainGun = new(this,
                            bulletData: Data.DefaultBulletData,

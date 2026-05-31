@@ -22,7 +22,7 @@ public class EnemyAnimator : KHIUnityMethods
     private readonly int RUNNING_TRIGGER = Animator.StringToHash("Run");
     private readonly RectTransform _healthBar;
 
-    public GameEnums.AnimationState AnimationState { get; private set; }
+    public GameEnums.PlayerAnimationState AnimationState { get; private set; }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -50,15 +50,15 @@ public class EnemyAnimator : KHIUnityMethods
     private void UpdateAnimation()
     {
         // Run Animation
-        if (AnimationState != GameEnums.AnimationState.Shooting && _owner.EMove.Dir != Vector2.zero)
+        if (AnimationState != GameEnums.PlayerAnimationState.Shooting && _owner.EMove.Dir != Vector2.zero)
         {
-            SetAnimationState(GameEnums.AnimationState.Shooting);
+            SetAnimationState(GameEnums.PlayerAnimationState.Shooting);
 
             _owner.Animator.SetTrigger(RUNNING_TRIGGER);
         }
     }
 
-    private void SetAnimationState(GameEnums.AnimationState newAnimationState)
+    private void SetAnimationState(GameEnums.PlayerAnimationState newAnimationState)
     {
         if (AnimationState != newAnimationState)
             AnimationState = newAnimationState;

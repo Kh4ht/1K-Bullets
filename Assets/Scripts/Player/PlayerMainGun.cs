@@ -55,15 +55,15 @@ public class PlayerMainGun : KHIUnityMethods
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            _owner.PAnimator.SetAnimationState(GameEnums.AnimationState.Shooting);
+            // _owner.PAnimator.SetAnimationState(GameEnums.PlayerAnimationState.Shooting);
 
             // Bullet.GetOrCreateBullet(_bulletSpawnPoint, _bulletData, _bulletSpawnPoint.position.KHGetDirTo(QueryManager.MouseWorldPos));
             Bullet.GetOrCreateBullet(_bulletSpawnPoint, _bulletData, Kh.GetDir(_owner.transform.eulerAngles.z), GameTags.ENEMY);
         }
-        else
-        {
-            _owner.PAnimator.SetAnimationState(GameEnums.AnimationState.Idle);
-        }
+        // else
+        // {
+        // _owner.PAnimator.SetAnimationState(GameEnums.PlayerAnimationState.Idle);
+        // }
     }
 
     #endregion

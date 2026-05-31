@@ -47,7 +47,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21e873a521d77491cabc700bf0b20cbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
-  _data: {fileID: 11400000, guid: b3f44e393fe564b788a8d5ceeaf4ffab, type: 2}
 --- !u!212 &7120761838315442868
 SpriteRenderer:
   serializedVersion: 2
@@ -93,8 +92,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1654044581
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: fbb1d6579247c3d4299254b726829415, type: 3}

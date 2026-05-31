@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Plsyer Bullet 1
   m_EditorClassIdentifier: Assembly-CSharp::BulletData
   _prefab: {fileID: 8405121103255681027, guid: a4dff757cc2e54ac4870cf2efea45111, type: 3}
-  _sprite: {fileID: 0}
+  _sprite: {fileID: 21300000, guid: fbb1d6579247c3d4299254b726829415, type: 3}
   _defaultMoveSpeed: 150
   _defaultDamage: 3
   _defaultBulletType: 0
