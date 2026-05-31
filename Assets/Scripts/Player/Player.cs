@@ -31,8 +31,10 @@ public class Player : MonoBehaviour, IUpdateObserver
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     [SerializeField] private PlayerData _data;
-    // [SerializeField] private GameObject _engineFireVFX;
-    [SerializeField] private Transform _bulletSpawnPoint;
+
+    [Header("MainGun Spawn Points")]
+    [SerializeField] private Directions8 bulletSpawnPoints;
+
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -78,7 +80,7 @@ public class Player : MonoBehaviour, IUpdateObserver
             PMainGun = new(this,
                            bulletData: Data.DefaultBulletData,
                            shootCD: Data.DefaultShootCD,
-                           bulletSpawnPoint: _bulletSpawnPoint),
+                           bulletSpawnPoints: bulletSpawnPoints),
         });
 
         _systems.KHForEach(p => p.IAwake());
@@ -97,6 +99,13 @@ public class Player : MonoBehaviour, IUpdateObserver
     public void OFixedUpdate()
     {
         _systems.KHForEach(p => p.IFixedUpdate());
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.blue;
+
+        bulletSpawnPoints.DrawCircles(transform.position);
     }
 
     #endregion

@@ -8,12 +8,15 @@ public class PlayerMainGun : KHIUnityMethods
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public PlayerMainGun(Player newOwner, BulletData bulletData, float shootCD, Transform bulletSpawnPoint)
+    public PlayerMainGun(Player newOwner,
+                         BulletData bulletData,
+                         float shootCD,
+                         Directions8 bulletSpawnPoints)
     {
         _owner = newOwner;
         _bulletData = bulletData;
         _shootCD = shootCD;
-        _bulletSpawnPoint = bulletSpawnPoint;
+        _bulletSpawnPoints = bulletSpawnPoints;
     }
 
     private readonly Player _owner;
@@ -26,20 +29,18 @@ public class PlayerMainGun : KHIUnityMethods
     private BulletData _bulletData;
     private KHTimer _shootCDTimer;
     private float _shootCD;
-    private Transform _bulletSpawnPoint;
+    private Directions8 _bulletSpawnPoints;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region UNITY EVENTS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-
     public void IUpdate()
     {
         ClickToShoot();
     }
 
-    // Unused
     public void IAwake() { }
     public void IStart() { }
     public void IFixedUpdate() { }
@@ -55,15 +56,9 @@ public class PlayerMainGun : KHIUnityMethods
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            // _owner.PAnimator.SetAnimationState(GameEnums.PlayerAnimationState.Shooting);
-
-            // Bullet.GetOrCreateBullet(_bulletSpawnPoint, _bulletData, _bulletSpawnPoint.position.KHGetDirTo(QueryManager.MouseWorldPos));
-            Bullet.GetOrCreateBullet(_bulletSpawnPoint, _bulletData, Kh.GetDir(_owner.transform.eulerAngles.z), GameTags.ENEMY);
+            _owner.PAnimator.PlayerAttack(
+                Helper.DirToAnimDir(Kh.GetDir(_owner.transform.position, QueryManager.MouseWorldPos)));
         }
-        // else
-        // {
-        // _owner.PAnimator.SetAnimationState(GameEnums.PlayerAnimationState.Idle);
-        // }
     }
 
     #endregion
@@ -71,7 +66,16 @@ public class PlayerMainGun : KHIUnityMethods
     #region PUBLIC METHODS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
+    public void FireBullet()
+    {
+        Vector2 playerToMouseDir = Kh.GetDir(_owner.transform.position, QueryManager.MouseWorldPos);
 
+        Bullet.GetOrCreateBullet(Helper.DirToBulletSpawnPoint(playerToMouseDir, _bulletSpawnPoints) + _owner.transform.position,
+                                 Quaternion.Euler(0, 0, Kh.KHGetAngle(playerToMouseDir)),
+                                 _bulletData,
+                                 playerToMouseDir,
+                                 GameTags.ENEMY);
+    }
 
     #endregion
 }

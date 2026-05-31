@@ -52,7 +52,6 @@ public class PlayerMove : KHIUnityMethods
         Move();
     }
 
-    // Unused
     public void IOnEnable() { }
     public void IOnDisable() { }
 
@@ -83,19 +82,30 @@ public class PlayerMove : KHIUnityMethods
         else
             Dir = new Vector2(0, Dir.y);
 
-        _owner.PAnimator.PlayerDir(Helper.Vector2ToDir(Dir));
+        _owner.PAnimator.PlayerMoveDir(Helper.Vector2ToAnimDir(Dir));
 
         if (Dir != Vector2.zero)
+        {
+            // Player moving
+            _owner.PAnimator.PlayerAttackDir(GameEnums.AnimAttackState.AttackRun);
             _owner.PAnimator.PlayerRunning(true);
+        }
         else
+        {
+
+            _owner.PAnimator.PlayerAttackDir(GameEnums.AnimAttackState.StationaryAttack);
             _owner.PAnimator.PlayerRunning(false);
+        }
     }
 
     private void Move()
     {
+        if (Dir == Vector2.zero && _rb2d.linearVelocity == Vector2.zero)
+            return;
+
         _rb2d.linearVelocity = (GameConst.DEFAULT_SPEED + Speed)
-            * Time.fixedDeltaTime
-            * Dir.normalized;
+        * Time.fixedDeltaTime
+        * Dir.normalized;
     }
 
     #endregion

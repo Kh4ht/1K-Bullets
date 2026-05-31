@@ -2,15 +2,45 @@
 #region GameConst
 // █████████████████████████████████████████████████████████████████████████████████████████████████
 
+using System;
+using UnityEngine;
+
 public static class GameConst
 {
     // Use This With LinearVelocity
     public const float DEFAULT_SPEED = 50f;
 
     public const float COLLISION_HIT_CD = 0.5f;
+
+    public const float GIZMOS_RADIUS_SMALL = 0.04f;
+    public const float GIZMOS_RADIUS_MEDIUM = 0.06f;
+    public const float GIZMOS_RADIUS_LARGE = 0.08f;
 }
 
 #endregion
+// █████████████████████████████████████████████████████████████████████████████████████████████████
+#region GameStructs
+// █████████████████████████████████████████████████████████████████████████████████████████████████
+#endregion
+
+[Serializable]
+public struct Directions8
+{
+    public Vector2 east, west, north, south, northEast, northWest, southEast, southWest;
+
+    public void DrawCircles(Vector2 ownerPos)
+    {
+        Gizmos.DrawSphere(east + ownerPos, GameConst.GIZMOS_RADIUS_SMALL);
+        Gizmos.DrawSphere(west + ownerPos, GameConst.GIZMOS_RADIUS_SMALL);
+        Gizmos.DrawSphere(north + ownerPos, GameConst.GIZMOS_RADIUS_SMALL);
+        Gizmos.DrawSphere(south + ownerPos, GameConst.GIZMOS_RADIUS_SMALL);
+        Gizmos.DrawSphere(northEast + ownerPos, GameConst.GIZMOS_RADIUS_SMALL);
+        Gizmos.DrawSphere(northWest + ownerPos, GameConst.GIZMOS_RADIUS_SMALL);
+        Gizmos.DrawSphere(southEast + ownerPos, GameConst.GIZMOS_RADIUS_SMALL);
+        Gizmos.DrawSphere(southWest + ownerPos, GameConst.GIZMOS_RADIUS_SMALL);
+    }
+}
+
 // █████████████████████████████████████████████████████████████████████████████████████████████████
 #region GameEnums
 // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -48,7 +78,7 @@ public static class GameEnums
         Following,
     }
 
-    public enum Direction
+    public enum AnimDir
     {
         NONE,
         North = 4,
@@ -59,6 +89,25 @@ public static class GameEnums
         NorthWest = 6,
         SouthEast = 7,
         SouthWest = 8,
+    }
+
+    public enum AnimAttackDir
+    {
+        NONE,
+        North = 3,
+        South = 2,
+        East = 0,
+        West = 1,
+        NorthEast = 4,
+        NorthWest = 5,
+        SouthEast = 6,
+        SouthWest = 7,
+    }
+
+    public enum AnimAttackState
+    {
+        StationaryAttack = 1,
+        AttackRun = 2,
     }
 }
 

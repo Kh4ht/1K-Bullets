@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using KH;
+using Unity.Mathematics;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D), typeof(SpriteRenderer))]
 public class Bullet : MonoBehaviour, IUpdateObserver
@@ -127,12 +128,12 @@ public class Bullet : MonoBehaviour, IUpdateObserver
     #region STATIC METHODS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public static Bullet GetOrCreateBullet(Transform spawnPoint, BulletData bulletData, Vector2 dir, string targetTag)
+    public static Bullet GetOrCreateBullet(Vector2 spawnPoint, quaternion rot, BulletData bulletData, Vector2 dir, string targetTag)
     {
         if (DisabledBullets.KHIsEmpty())
         {
             // Case 1: Create New Bullet
-            return Instantiate(bulletData.Prefab, spawnPoint.position, spawnPoint.rotation).ResetBullet(bulletData, dir, targetTag);
+            return Instantiate(bulletData.Prefab, spawnPoint, rot).ResetBullet(bulletData, dir, targetTag);
         }
         else
         {
@@ -140,7 +141,7 @@ public class Bullet : MonoBehaviour, IUpdateObserver
             Bullet selectedBullet = DisabledBullets[0];
             DisabledBullets.Remove(selectedBullet);
             selectedBullet.gameObject.SetActive(true); // TEST: move this to the last to see if previous lines will work, or you need to set it to active first for them to work.
-            selectedBullet.transform.SetLocalPositionAndRotation(spawnPoint.position, spawnPoint.rotation);
+            selectedBullet.transform.SetLocalPositionAndRotation(spawnPoint, rot);
             return selectedBullet.ResetBullet(bulletData, dir, targetTag);
         }
     }
