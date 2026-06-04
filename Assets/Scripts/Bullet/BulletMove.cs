@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BulletMove : KHIUnityMethods
+public class BulletMove : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
@@ -54,7 +54,7 @@ public class BulletMove : KHIUnityMethods
 
     private void MoveStraight()
     {
-        _owner.Rb2d.linearVelocity = (GameConst.DEFAULT_SPEED + MoveSpeed) * Time.fixedDeltaTime * Dir;
+        _owner.Rb2d.linearVelocity = MoveSpeed * Time.fixedDeltaTime * Dir;
     }
 
     private void FollowTarget()

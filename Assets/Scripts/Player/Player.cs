@@ -19,7 +19,7 @@ public class Player : MonoBehaviour, IUpdateObserver
     public PlayerMainGun PMainGun { get; private set; }
     public PlayerHealth PHealth { get; private set; }
 
-    private readonly List<KHIUnityMethods> _systems = new();
+    private readonly List<IKHIUnityMethods> _systems = new();
 
     // Getters
     public PlayerData Data => _data;
@@ -31,9 +31,6 @@ public class Player : MonoBehaviour, IUpdateObserver
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     [SerializeField] private PlayerData _data;
-
-    [Header("MainGun Spawn Points")]
-    [SerializeField] private Directions8 bulletSpawnPoints;
 
 
     #endregion
@@ -54,14 +51,14 @@ public class Player : MonoBehaviour, IUpdateObserver
     {
         UpdateManager.RegisterObserver(this);
 
-        _systems.KHForEach(p => p.IOnEnable());
+        _systems.OnEnableAll();
     }
 
     private void OnDisable()
     {
         UpdateManager.UnregisterObserver(this);
 
-        _systems.KHForEach(p => p.IOnDisable());
+        _systems.OnDisableAll();
     }
 
     private void Awake()
@@ -69,43 +66,41 @@ public class Player : MonoBehaviour, IUpdateObserver
         _rb2d = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
 
-        _systems.AddRange(new KHIUnityMethods[]
+        _systems.AddRange(new IKHIUnityMethods[]
         {
             PAnimator = new(this, animator: _animator),
             PHealth = new(this,
                           maxHealth: Data.DefaultMaxHealth),
             PMove = new(this,
-                        rigidbody2D: _rb2d,
-                        newSpeed: Data.DefaultMoveSpeed),
+                        rigidbody2D: _rb2d),
             PMainGun = new(this,
                            bulletData: Data.DefaultBulletData,
-                           shootCD: Data.DefaultShootCD,
-                           bulletSpawnPoints: bulletSpawnPoints),
+                           bulletSpawnPoints: Data.BulletSpawnPoints),
         });
 
-        _systems.KHForEach(p => p.IAwake());
+        _systems.AwakeAll();
     }
 
     private void Start()
     {
-        _systems.KHForEach(p => p.IStart());
+        _systems.StartAll();
     }
 
     public void OUpdate()
     {
-        _systems.KHForEach(p => p.IUpdate());
+        _systems.UpdateAll();
     }
 
     public void OFixedUpdate()
     {
-        _systems.KHForEach(p => p.IFixedUpdate());
+        _systems.FixedUpdateAll();
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.blue;
 
-        bulletSpawnPoints.DrawCircles(transform.position);
+        Data.BulletSpawnPoints.DrawCircles(transform.position);
     }
 
     #endregion

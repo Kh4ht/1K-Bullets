@@ -1,25 +1,27 @@
 using KH;
 using UnityEngine;
 
-public class EnemyMove : KHIUnityMethods
+public class EnemyMove : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public EnemyMove(Enemy newOwner)
+    public EnemyMove(Enemy newOwner, Rigidbody2D rb2d)
     {
         _owner = newOwner;
+        _rb2d = rb2d;
     }
 
     private readonly Enemy _owner;
+    private readonly Rigidbody2D _rb2d;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public float speed { get; private set; }
+    public float Speed { get; private set; }
     public Vector2 Dir { get; private set; }
 
     private Player _targetPlayer;
@@ -33,12 +35,17 @@ public class EnemyMove : KHIUnityMethods
     public void IStart()
     {
         _targetPlayer = GameObject.FindGameObjectWithTag(GameTags.PLAYER).GetComponent<Player>();
+
+        SetSpeed(_owner.Data.DefaultMoveSpeed);
     }
 
     public void IUpdate()
     {
         if (_owner.EHealth.HealthCrtl.IsDead)
+        {
+            _owner.EAnimator.AnimRunning(false);
             return;
+        }
 
         UpdateDir();
     }
@@ -51,7 +58,6 @@ public class EnemyMove : KHIUnityMethods
         Move();
     }
 
-    // Unused
     public void IAwake() { }
     public void IOnEnable() { }
     public void IOnDisable() { }
@@ -64,11 +70,17 @@ public class EnemyMove : KHIUnityMethods
     private void UpdateDir()
     {
         Dir = Kh.GetDir(_owner, _targetPlayer);
+
+        if (Dir != Vector2.zero)
+        {
+            _owner.EAnimator.AnimRunning(true);
+            _owner.EAnimator.AnimMoveDir(Dir);
+        }
     }
 
     private void Move()
     {
-        _owner.Rb2d.linearVelocity = (GameConst.DEFAULT_SPEED + speed)
+        _rb2d.linearVelocity = Speed
             * Time.fixedDeltaTime
             * Dir.normalized;
     }
@@ -78,7 +90,13 @@ public class EnemyMove : KHIUnityMethods
     #region PUBLIC METHODS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-
+    public void SetSpeed(float newSpeed)
+    {
+        Speed = newSpeed;
+        _owner.EAnimator.SetAnimatorSpeed(
+            Speed.MoveSpdToAnimatorSpd()
+        );
+    }
 
     #endregion
 }

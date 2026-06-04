@@ -12,12 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e08e79a250044c728d058c2b8f4ac33, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
-  _defaultMoveSpeed: 50
-  _engineFireSprites:
-  - {fileID: 21300000, guid: 05b93033ecbc27946ba32ffb568d0daa, type: 3}
-  - {fileID: 21300000, guid: d508d28134d774f42b2d48bc312e396f, type: 3}
-  - {fileID: 21300000, guid: 65c3fe2691ba97a4783176e64a523113, type: 3}
-  - {fileID: 21300000, guid: b14bc6a2e58022748abe0274a8345df0, type: 3}
+  _defaultMoveSpeed: 60
+  _defaultAttackSpeed: 2
   _defaultMaxHealth: 100
   _defaultBulletData: {fileID: 11400000, guid: b3f44e393fe564b788a8d5ceeaf4ffab, type: 2}
-  _defaultShootCD: 1
+  _bulletSpawnPoints:
+    east: {x: 0.24, y: 0.09}
+    west: {x: -0.21, y: 0.09}
+    north: {x: 0, y: 0.24}
+    south: {x: 0, y: -0.12}
+    northEast: {x: 0.15, y: 0.18}
+    northWest: {x: -0.15, y: 0.18}
+    southEast: {x: 0.18, y: -0.03}
+    southWest: {x: -0.15, y: -0.04}

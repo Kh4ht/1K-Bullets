@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class PlayerAnimator : KHIUnityMethods
+public class PlayerAnimator : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
@@ -14,11 +13,15 @@ public class PlayerAnimator : KHIUnityMethods
     }
 
     private readonly Player _owner;
+    private readonly Animator _animator;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    public float MoveAnimationSpeed { get; private set; }
+    public float AttackAnimationSpeed { get; private set; }
 
     // float
     private readonly int DIRECTION = Animator.StringToHash("Direction");
@@ -34,12 +37,6 @@ public class PlayerAnimator : KHIUnityMethods
     // bool
     private readonly int IS_RUN = Animator.StringToHash("IsRun");
 
-
-    // private KHSpriteAnimator _engineFireAnimator;
-    private readonly Animator _animator;
-
-    public GameEnums.PlayerAnimationState AnimationState { get; private set; }
-
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region UNITY EVENTS
@@ -47,11 +44,14 @@ public class PlayerAnimator : KHIUnityMethods
 
     public void IAwake()
     {
-        _animator.speed = 4;
-        // _engineFireAnimator = new(_owner, _owner.EngineFireVFX.GetComponent<SpriteRenderer>());
+        _animator.speed = GameConst.ANIMATOR_DEFAULT_SPEED;
     }
 
-    public void IStart() { }
+    public void IStart()
+    {
+        AttackAnimationSpeed = _owner.Data.DefaultAttackSpeed;
+    }
+
     public void IUpdate() { }
     public void IFixedUpdate() { }
     public void IOnEnable() { }
@@ -63,43 +63,46 @@ public class PlayerAnimator : KHIUnityMethods
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
 
+
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region PUBLIC METHODS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public void SetAnimationState(GameEnums.PlayerAnimationState newAnimationState)
+    public void SetMoveAnimationSpeed(float speed)
     {
-        if (AnimationState != newAnimationState)
-            AnimationState = newAnimationState;
+        MoveAnimationSpeed = speed;
+        _animator.speed = MoveAnimationSpeed;
+    }
+    public void SetAttackAnimationSpeed(float speed)
+    {
+        AttackAnimationSpeed = speed;
+        _animator.speed = AttackAnimationSpeed;
     }
 
-    public void PlayerRunning(bool isRunning)
+    public void AnimRunning(bool isRunning)
     {
         _animator.SetBool(IS_RUN, isRunning);
     }
 
-    public void PlayerMoveDir(GameEnums.AnimDir animDir)
+    public void AnimMoveDir(Vector2 dir)
     {
-        if (animDir == GameEnums.AnimDir.NONE)
-            return;
-
-        _animator.SetFloat(DIRECTION, (float)animDir);
+        _animator.SetFloat(DIRECTION, (float)Helper.PlayerMoveDirToAnimDir(dir));
     }
 
-    public void PlayerAttack(GameEnums.AnimDir animDir)
+    public void AnimAttack(Vector2 dir)
     {
         _animator.SetTrigger(ATTACK);
-        _animator.SetFloat(ATTACK_DIR, (float)animDir);
+        _animator.SetFloat(ATTACK_DIR, (float)Helper.Vector2ToAnimDir(dir));
     }
 
-    public void PlayerUpdateAttackDir(GameEnums.AnimDir animDir)
+    public void AnimUpdateAttackDir(Vector2 dir)
     {
-        _animator.SetFloat(ATTACK_DIR, (float)animDir);
-        PlayerMoveDir(animDir);
+        _animator.SetFloat(ATTACK_DIR, (float)Helper.Vector2ToAnimDir(dir));
+        AnimMoveDir(dir);
     }
 
-    public void PlayerAttackDir(GameEnums.AnimAttackState animAttackState)
+    public void AnimAttackState(GameEnums.AnimAttackState animAttackState)
     {
         _animator.SetFloat(ATTACK_STATE, (float)animAttackState);
     }

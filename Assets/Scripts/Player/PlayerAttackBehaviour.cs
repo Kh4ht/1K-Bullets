@@ -5,7 +5,7 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
 {
     private Player player;
     private bool _fired;
-    private int fireFrame = 8;
+    private readonly int fireFrame = 8;
     private int totalFrames;
 
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -19,6 +19,9 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
     {
         if (player == null)
             player = animator.GetComponent<Player>();
+
+        player.PAnimator.SetAttackAnimationSpeed(player.PAnimator.AttackAnimationSpeed);
+        player.PMove.ApplySpeedReductionWhenAttack();
 
         _fired = false;
 
@@ -36,11 +39,10 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
         AnimatorStateInfo stateInfo,
         int layerIndex)
     {
-        player.PAnimator.PlayerUpdateAttackDir(
-            Helper.DirToAnimDir(
-                Kh.GetDir(
-                    player.transform.position,
-                    QueryManager.MouseWorldPos)));
+        player.PAnimator.AnimUpdateAttackDir(
+            Kh.GetDir(
+                player.transform.position,
+                GameManager.MouseWorldPos));
 
         int currentFrame = Mathf.FloorToInt(
             (stateInfo.normalizedTime % 1f) * totalFrames);
@@ -49,6 +51,11 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
         {
             _fired = true;
             player.PMainGun.FireBullet();
+        }
+
+        if (totalFrames - currentFrame <= 2)
+        {
+            player.PMainGun.IsAttacking = false;
         }
     }
 
@@ -62,7 +69,8 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
         AnimatorStateInfo stateInfo,
         int layerIndex)
     {
-
+        player.PAnimator.SetMoveAnimationSpeed(player.PAnimator.MoveAnimationSpeed);
+        player.PMove.RestoreOriginalMoveSpeed();
     }
 
     #endregion

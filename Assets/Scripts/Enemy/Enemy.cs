@@ -9,9 +9,13 @@ public class Enemy : MonoBehaviour, IUpdateObserver
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
+    // Static
+    public static List<Enemy> DisabledEnemies { get; private set; } = new();
+    private static GameObject _enemyContainer;
+
     // Components
-    public Rigidbody2D Rb2d { get; private set; }
-    public Animator Animator { get; private set; }
+    private Rigidbody2D _rb2d;
+    private Animator _animator;
 
     // Systems
     public EnemyMove EMove { get; private set; }
@@ -19,7 +23,7 @@ public class Enemy : MonoBehaviour, IUpdateObserver
     public EnemyHealth EHealth { get; private set; }
     public EnemyCollision ECollision { get; private set; }
 
-    private readonly List<KHIUnityMethods> _systems = new();
+    private readonly List<IKHIUnityMethods> _systems = new();
 
     // Getters
     public EnemyData Data => _data;
@@ -39,10 +43,10 @@ public class Enemy : MonoBehaviour, IUpdateObserver
 
     private void Reset()
     {
-        Rb2d = GetComponent<Rigidbody2D>();
+        _rb2d = GetComponent<Rigidbody2D>();
 
-        Rb2d.gravityScale = 0;
-        Rb2d.freezeRotation = true;
+        _rb2d.gravityScale = 0;
+        _rb2d.freezeRotation = true;
         tag = GameTags.ENEMY;
     }
 
@@ -62,15 +66,17 @@ public class Enemy : MonoBehaviour, IUpdateObserver
 
     private void Awake()
     {
-        Rb2d = GetComponent<Rigidbody2D>();
-        Animator = GetComponent<Animator>();
+        _rb2d = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
 
-        _systems.AddRange(new KHIUnityMethods[]
+        _systems.AddRange(new IKHIUnityMethods[]
         {
-            EMove = new(this),
+            EMove = new(this,
+                        rb2d: _rb2d),
             ECollision = new(this),
             EAnimator = new(this,
-                            healthBar: _healthBar),
+                            healthBar: _healthBar,
+                            animator: _animator),
             EHealth = new(this,
                           healthBar: _healthBar),
         });
@@ -100,17 +106,58 @@ public class Enemy : MonoBehaviour, IUpdateObserver
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
+    #region PRIVATE METHODS
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    /// <summary>
+    /// This is made for the reusable objects to reset their values.
+    /// </summary>
+    private Enemy ResetEnemy()
+    {
+        EHealth.HealthCrtl.Revive();
+
+        return this;
+    }
+
+    #endregion
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region PUBLIC METHODS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-
+    public void DisableEnemy()
+    {
+        gameObject.SetActive(false);
+        DisabledEnemies.Add(this);
+    }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region STATIC METHODS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
+    public static Enemy GetOrCreateEnemy(Vector2 spawnPoint, EnemyData enemyData)
+    {
+        if (_enemyContainer == null)
+        {
+            _enemyContainer = new GameObject("Enemies");
+        }
 
+        if (DisabledEnemies.KHIsEmpty())
+        {
+            // Case 1: Create New
+            return Instantiate(enemyData.Prefab, spawnPoint, Quaternion.Euler(0, 0, 0), _enemyContainer.transform);
+        }
+        else
+        {
+            // Get Disabled
+            Enemy selectedEnemy = DisabledEnemies[0];
+
+            DisabledEnemies.Remove(selectedEnemy);
+            selectedEnemy.gameObject.SetActive(true); // TEST: move this to the last to see if previous lines will work, or you need to set it to active first for them to work.
+            selectedEnemy.transform.position = spawnPoint;
+            return selectedEnemy.ResetEnemy();
+        }
+    }
 
     #endregion
 }

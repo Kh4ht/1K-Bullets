@@ -1,4 +1,4 @@
-public class EnemyHealth : KHIUnityMethods
+public class EnemyHealth : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
@@ -28,10 +28,13 @@ public class EnemyHealth : KHIUnityMethods
 
     public void IOnEnable()
     {
+        HealthCrtl = new(_owner.Data.DefaultMaxHealth, _owner.Data.DefaultMaxHealth);
+
         HealthCrtl.AddOnHealthChangedListener(OnHealthChanged);
         HealthCrtl.AddOnHealthDecreaseListener(OnHealthDecreased);
         HealthCrtl.AddOnMaxHealthListener(OnMaxHealth);
         HealthCrtl.AddOnDeathListener(OnDeath);
+        HealthCrtl.AddOnReviveListener(OnRevive);
     }
     public void IOnDisable()
     {
@@ -39,6 +42,7 @@ public class EnemyHealth : KHIUnityMethods
         HealthCrtl.RemoveOnHealthDecreaseListener(OnHealthDecreased);
         HealthCrtl.RemoveOnMaxHealthListener(OnMaxHealth);
         HealthCrtl.RemoveOnDeathListener(OnDeath);
+        HealthCrtl.RemoveOnReviveListener(OnRevive);
     }
 
     public void IAwake()
@@ -51,7 +55,6 @@ public class EnemyHealth : KHIUnityMethods
         _healthBar.gameObject.SetActive(false);
     }
 
-    // Unused
     public void IUpdate() { }
     public void IFixedUpdate() { }
 
@@ -78,7 +81,13 @@ public class EnemyHealth : KHIUnityMethods
     private void OnDeath()
     {
         _healthBar.gameObject.SetActive(false);
+        _owner.DisableEnemy();
         LevelManager.Ins.EnemyKilled();
+    }
+
+    private void OnRevive()
+    {
+        _healthBar.gameObject.SetActive(true);
     }
 
     #endregion

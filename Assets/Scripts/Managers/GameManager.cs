@@ -1,14 +1,17 @@
+using KH;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 [DisallowMultipleComponent]
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour, IUpdateObserver
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     public static GameManager Ins { get; private set; }
+
+    public static Vector2 MouseWorldPos { get; private set; }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -22,7 +25,17 @@ public class GameManager : MonoBehaviour
     #region UNITY EVENTS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    void Awake()
+    private void OnEnable()
+    {
+        UpdateManager.RegisterObserver(this);
+    }
+
+    private void OnDisable()
+    {
+        UpdateManager.UnregisterObserver(this);
+    }
+
+    private void Awake()
     {
         if (Ins == null)
             Ins = this;
@@ -30,7 +43,16 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
 
         DontDestroyOnLoad(this);
+
+        MouseWorldPos = Kh.GetMouseWorldPos();
     }
+
+    public void OUpdate()
+    {
+        MouseWorldPos = Kh.GetMouseWorldPos();
+    }
+
+    public void OFixedUpdate() { }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████

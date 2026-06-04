@@ -1,7 +1,7 @@
 using KH;
 using UnityEngine;
 
-public class EnemyCollision : KHIUnityMethods
+public class EnemyCollision : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
@@ -36,7 +36,7 @@ public class EnemyCollision : KHIUnityMethods
     }
     public void IStart()
     {
-        _targetPlayer = GameObject.FindGameObjectWithTag(GameTags.PLAYER).GetComponent<Player>();
+        _targetPlayer = LevelManager.Ins.Player;
     }
 
     public void IUpdate()
@@ -73,7 +73,7 @@ public class EnemyCollision : KHIUnityMethods
         {
             HitPlayer(_targetPlayer);
 
-            _collTimer.ResetTimer();
+            _collTimer.Reset();
         }
     }
 

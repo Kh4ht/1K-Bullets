@@ -4,60 +4,10 @@ using UnityEngine;
 public static class Helper
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region DirToAnimDirIndex
+    #region Vector2ToAnimDir
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public static GameEnums.AnimAttackDir DirToAnimDirIndex(Vector2 vector2)
-    {
-        float angle = Kh.KHGetAngle(vector2);
-
-        // Normalize angle to 0-360 range
-        angle = angle % 360;
-        if (angle < 0) angle += 360;
-
-        // Add half of 45° (22.5°) to center the ranges
-        angle += 22.5f;
-
-        if (angle >= 0 && angle < 45)
-        {
-            return GameEnums.AnimAttackDir.East; // East
-        }
-        else if (angle >= 45 && angle < 90)
-        {
-            return GameEnums.AnimAttackDir.NorthEast; // Northeast
-        }
-        else if (angle >= 90 && angle < 135)
-        {
-            return GameEnums.AnimAttackDir.North; // North
-        }
-        else if (angle >= 135 && angle < 180)
-        {
-            return GameEnums.AnimAttackDir.NorthWest; // Northwest
-        }
-        else if (angle >= 180 && angle < 225)
-        {
-            return GameEnums.AnimAttackDir.West; // West
-        }
-        else if (angle >= 225 && angle < 270)
-        {
-            return GameEnums.AnimAttackDir.SouthWest; // Southwest
-        }
-        else if (angle >= 270 && angle < 315)
-        {
-            return GameEnums.AnimAttackDir.South; // South
-        }
-        else // (angle >= 315 && angle < 360)
-        {
-            return GameEnums.AnimAttackDir.SouthEast; // Southeast
-        }
-    }
-
-    #endregion
-    // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region DirToAnimDirIndex
-    // █████████████████████████████████████████████████████████████████████████████████████████████████
-
-    public static GameEnums.AnimDir DirToAnimDir(Vector2 vector2)
+    public static GameEnums.AnimDir Vector2ToAnimDir(Vector2 vector2)
     {
         float angle = Kh.KHGetAngle(vector2);
 
@@ -104,10 +54,10 @@ public static class Helper
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region DirToAnimDirIndex
+    #region PlayerMoveDirToAnimDir
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public static GameEnums.AnimDir Vector2ToAnimDir(Vector2 vector2)
+    public static GameEnums.AnimDir PlayerMoveDirToAnimDir(Vector2 vector2)
     {
         // Handle pure directions (no diagonals)
         if (vector2.x == 0)
@@ -129,12 +79,12 @@ public static class Helper
         if (vector2.x < 0 && vector2.y < 0) return GameEnums.AnimDir.SouthWest;
 
         // Default (0,0)
-        return GameEnums.AnimDir.NONE;
+        return GameEnums.AnimDir.East;
     }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region DirToAnimDirIndex
+    #region DirToBulletSpawnPoint
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     public static Vector3 DirToBulletSpawnPoint(Vector2 vector2, Directions8 directions8)
@@ -184,14 +134,26 @@ public static class Helper
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region DirToAnimDirIndex
+    #region MinutesToSeconds
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    // public static void DrawSmallCircle(Vector2 vector2, Directions8 directions8)
-    // {
-
-    // }
+    public static int MinutesToSeconds(this int minutes)
+    {
+        return minutes * 60;
+    }
 
     #endregion
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+    #region MinutesToSeconds
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    public static float MoveSpdToAnimatorSpd(this float MoveSpeed)
+    {
+        return MoveSpeed / 25f;
+
+    }
+
+    #endregion
+
 
 }

@@ -15,12 +15,14 @@ public class EnemyData : ScriptableObject
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     // Fields
-    [SerializeField] private float _defaultMoveSpeed = 10f;
-    [SerializeField] private int defaultMaxHealth = 25;
-    [SerializeField] private int defaultDamage = 3;
+    [SerializeField] private Enemy _prefab;
+    [SerializeField, Min(0)] private float _defaultMoveSpeed = 10f;
+    [SerializeField, Min(1)] private int defaultMaxHealth = 25;
+    [SerializeField, Min(0)] private int defaultDamage = 3;
 
 
     // Getters
+    public Enemy Prefab => _prefab;
     public float DefaultMoveSpeed => _defaultMoveSpeed;
     public int DefaultMaxHealth => defaultMaxHealth;
     public int DefaultDamage => defaultDamage;

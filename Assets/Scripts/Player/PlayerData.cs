@@ -16,19 +16,18 @@ public class PlayerData : ScriptableObject
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     // Fields
-    [SerializeField] private float _defaultMoveSpeed = 10f;
-    [SerializeField] private List<Sprite> _engineFireSprites = new();
-    [SerializeField] private int _defaultMaxHealth = 100;
+    [SerializeField, Min(0)] private float _defaultMoveSpeed = 10f, _defaultAttackSpeed = 2;
+    [SerializeField, Min(1)] private int _defaultMaxHealth = 100;
     [SerializeField] private BulletData _defaultBulletData;
-    [SerializeField] private float _defaultShootCD = 1;
+    [SerializeField] private Directions8 _bulletSpawnPoints;
 
 
     // Getters
     public float DefaultMoveSpeed => _defaultMoveSpeed;
-    public List<Sprite> EngineFireSprites => _engineFireSprites;
+    public float DefaultAttackSpeed => _defaultAttackSpeed;
     public int DefaultMaxHealth => _defaultMaxHealth;
     public BulletData DefaultBulletData => _defaultBulletData;
-    public float DefaultShootCD => _defaultShootCD;
+    public Directions8 BulletSpawnPoints => _bulletSpawnPoints;
 
     #endregion
 }

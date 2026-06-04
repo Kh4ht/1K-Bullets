@@ -2,7 +2,7 @@ using KH;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMainGun : KHIUnityMethods
+public class PlayerMainGun : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
@@ -10,26 +10,23 @@ public class PlayerMainGun : KHIUnityMethods
 
     public PlayerMainGun(Player newOwner,
                          BulletData bulletData,
-                         float shootCD,
                          Directions8 bulletSpawnPoints)
     {
         _owner = newOwner;
         _bulletData = bulletData;
-        _shootCD = shootCD;
         _bulletSpawnPoints = bulletSpawnPoints;
     }
 
     private readonly Player _owner;
+    private readonly BulletData _bulletData;
+    private readonly Directions8 _bulletSpawnPoints;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    private BulletData _bulletData;
-    private KHTimer _shootCDTimer;
-    private float _shootCD;
-    private Directions8 _bulletSpawnPoints;
+    public bool IsAttacking;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -54,10 +51,12 @@ public class PlayerMainGun : KHIUnityMethods
 
     private void ClickToShoot()
     {
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        if (Mouse.current.leftButton.isPressed && !IsAttacking)
         {
-            _owner.PAnimator.PlayerAttack(
-                Helper.DirToAnimDir(Kh.GetDir(_owner.transform.position, QueryManager.MouseWorldPos)));
+            IsAttacking = true;
+
+            _owner.PAnimator.AnimAttack(
+                Kh.GetDir(_owner.transform.position, GameManager.MouseWorldPos));
         }
     }
 
@@ -68,7 +67,7 @@ public class PlayerMainGun : KHIUnityMethods
 
     public void FireBullet()
     {
-        Vector2 playerToMouseDir = Kh.GetDir(_owner.transform.position, QueryManager.MouseWorldPos);
+        Vector2 playerToMouseDir = Kh.GetDir(_owner.transform.position, GameManager.MouseWorldPos);
 
         Bullet.GetOrCreateBullet(Helper.DirToBulletSpawnPoint(playerToMouseDir, _bulletSpawnPoints) + _owner.transform.position,
                                  Quaternion.Euler(0, 0, Kh.KHGetAngle(playerToMouseDir)),

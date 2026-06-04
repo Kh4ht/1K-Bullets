@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using KH;
-using Unity.Mathematics;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D), typeof(SpriteRenderer))]
+[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D), typeof(SpriteRenderer))]
 public class Bullet : MonoBehaviour, IUpdateObserver
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -11,18 +10,19 @@ public class Bullet : MonoBehaviour, IUpdateObserver
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     // Static
-    public static List<Bullet> DisabledBullets = new();
+    public static List<Bullet> DisabledBullets { get; private set; } = new();
+    private static GameObject _bulletContainer;
 
     // Components
     public Rigidbody2D Rb2d { get; private set; }
-    public CapsuleCollider2D Coll2d { get; private set; }
+    public Collider2D Coll2d { get; private set; }
     public SpriteRenderer SpriteR { get; private set; }
 
     // Systems
     public BulletMove BMove { get; private set; }
     public BulletCollision BCollision { get; private set; }
 
-    private readonly List<KHIUnityMethods> _systems = new();
+    private readonly List<IKHIUnityMethods> _systems = new();
 
     // Getters
 
@@ -41,7 +41,7 @@ public class Bullet : MonoBehaviour, IUpdateObserver
     private void Reset()
     {
         Rb2d = GetComponent<Rigidbody2D>();
-        Coll2d = GetComponent<CapsuleCollider2D>();
+        Coll2d = GetComponent<Collider2D>();
 
         Rb2d.gravityScale = 0;
         Coll2d.isTrigger = true;
@@ -66,7 +66,7 @@ public class Bullet : MonoBehaviour, IUpdateObserver
     private void Awake()
     {
         Rb2d = GetComponent<Rigidbody2D>();
-        Coll2d = GetComponent<CapsuleCollider2D>();
+        Coll2d = GetComponent<Collider2D>();
         SpriteR = GetComponent<SpriteRenderer>();
     }
 
@@ -105,7 +105,7 @@ public class Bullet : MonoBehaviour, IUpdateObserver
                          damage: bulletData.DefaultDamage);
 
         _systems.Clear();
-        _systems.AddRange(new KHIUnityMethods[] { BMove, BCollision, });
+        _systems.AddRange(new IKHIUnityMethods[] { BMove, BCollision, });
 
         SpriteR.sprite = bulletData.Sprite;
 
@@ -128,17 +128,23 @@ public class Bullet : MonoBehaviour, IUpdateObserver
     #region STATIC METHODS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public static Bullet GetOrCreateBullet(Vector2 spawnPoint, quaternion rot, BulletData bulletData, Vector2 dir, string targetTag)
+    public static Bullet GetOrCreateBullet(Vector2 spawnPoint, Quaternion rot, BulletData bulletData, Vector2 dir, string targetTag)
     {
+        if (_bulletContainer == null)
+        {
+            _bulletContainer = new GameObject("Bullets");
+        }
+
         if (DisabledBullets.KHIsEmpty())
         {
             // Case 1: Create New Bullet
-            return Instantiate(bulletData.Prefab, spawnPoint, rot).ResetBullet(bulletData, dir, targetTag);
+            return Instantiate(bulletData.Prefab, spawnPoint, rot, _bulletContainer.transform).ResetBullet(bulletData, dir, targetTag);
         }
         else
         {
             // Get Disabled Bullet
             Bullet selectedBullet = DisabledBullets[0];
+
             DisabledBullets.Remove(selectedBullet);
             selectedBullet.gameObject.SetActive(true); // TEST: move this to the last to see if previous lines will work, or you need to set it to active first for them to work.
             selectedBullet.transform.SetLocalPositionAndRotation(spawnPoint, rot);

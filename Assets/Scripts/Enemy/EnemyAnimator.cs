@@ -1,42 +1,56 @@
 using UnityEngine;
 
-public class EnemyAnimator : KHIUnityMethods
+public class EnemyAnimator : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public EnemyAnimator(Enemy newOwner, SliderController healthBar)
+    public EnemyAnimator(Enemy newOwner, SliderController healthBar, Animator animator)
     {
         _owner = newOwner;
         _healthBar = healthBar.GetComponent<RectTransform>();
+        _animator = animator;
     }
 
     private readonly Enemy _owner;
+    private readonly RectTransform _healthBar;
+    private readonly Animator _animator;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    private readonly int RUNNING_TRIGGER = Animator.StringToHash("Run");
-    private readonly RectTransform _healthBar;
+    // float
+    private readonly int DIRECTION = Animator.StringToHash("Direction");
+    private readonly int ATTACK_STATE = Animator.StringToHash("AttackState");
+    private readonly int ATTACK_DIR = Animator.StringToHash("AttackDir");
 
-    public GameEnums.PlayerAnimationState AnimationState { get; private set; }
+    // int
+    private readonly int DIR_INDEX = Animator.StringToHash("DirIndex");
+
+    // trigger
+    private readonly int ATTACK = Animator.StringToHash("Attack");
+
+    // bool
+    private readonly int IS_RUN = Animator.StringToHash("IsRun");
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region UNITY EVENTS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public void IUpdate()
+    public void IAwake()
     {
-        Flip();
-        UpdateAnimation();
+        _animator.speed = GameConst.ANIMATOR_DEFAULT_SPEED;
     }
 
-    // Unused
-    public void IAwake() { }
+    public void IUpdate()
+    {
+
+    }
+
     public void IStart() { }
     public void IFixedUpdate() { }
     public void IOnEnable() { }
@@ -47,44 +61,27 @@ public class EnemyAnimator : KHIUnityMethods
     #region PRIVATE METHODS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    private void UpdateAnimation()
-    {
-        // Run Animation
-        if (AnimationState != GameEnums.PlayerAnimationState.Shooting && _owner.EMove.Dir != Vector2.zero)
-        {
-            SetAnimationState(GameEnums.PlayerAnimationState.Shooting);
 
-            _owner.Animator.SetTrigger(RUNNING_TRIGGER);
-        }
-    }
-
-    private void SetAnimationState(GameEnums.PlayerAnimationState newAnimationState)
-    {
-        if (AnimationState != newAnimationState)
-            AnimationState = newAnimationState;
-    }
-
-    private void Flip()
-    {
-        if (_owner.EMove.Dir.x > 0 && _owner.transform.rotation.y != 0)
-        {
-            _owner.transform.rotation = Quaternion.Euler(new Vector3(_owner.transform.rotation.x, 0, _owner.transform.rotation.z));
-            // Counter-flip the health bar
-            _healthBar.localRotation = Quaternion.Euler(0, 0, 0);
-        }
-        else if (_owner.EMove.Dir.x < 0 && _owner.transform.rotation.y != 180)
-        {
-            _owner.transform.rotation = Quaternion.Euler(new Vector3(_owner.transform.rotation.x, 180, _owner.transform.rotation.z));
-            // Counter-flip the health bar
-            _healthBar.localRotation = Quaternion.Euler(0, 180, 0);
-        }
-    }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region PUBLIC METHODS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
+    public void SetAnimatorSpeed(float animatorSpeed)
+    {
+        _animator.speed = animatorSpeed;
+    }
+
+    public void AnimRunning(bool isRunning)
+    {
+        _animator.SetBool(IS_RUN, isRunning);
+    }
+
+    public void AnimMoveDir(Vector2 dir)
+    {
+        _animator.SetFloat(DIRECTION, (float)Helper.Vector2ToAnimDir(dir));
+    }
 
 
     #endregion

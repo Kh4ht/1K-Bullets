@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BulletCollision : KHIUnityMethods
+public class BulletCollision : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR

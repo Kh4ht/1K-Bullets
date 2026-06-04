@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4853356312357852176}
-  - component: {fileID: 8405121103255681027}
+  - component: {fileID: 3417091988106208025}
   - component: {fileID: 7120761838315442868}
-  - component: {fileID: 5614933666773178485}
-  - component: {fileID: 5187076551872413277}
+  - component: {fileID: 4442968838855567676}
+  - component: {fileID: 1815921033753429108}
   m_Layer: 0
   m_Name: Bullet 1
   m_TagString: Untagged
@@ -35,7 +35,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8405121103255681027
+--- !u!114 &3417091988106208025
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -106,7 +106,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!50 &5614933666773178485
+--- !u!50 &4442968838855567676
 Rigidbody2D:
   serializedVersion: 5
   m_ObjectHideFlags: 0
@@ -133,8 +133,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!70 &5187076551872413277
-CapsuleCollider2D:
+--- !u!61 &1815921033753429108
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -167,6 +167,15 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.17, y: 0.0001}
-  m_Direction: 0
+  m_Offset: {x: -0.007874019, y: 0.06692913}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5357143, y: -1.2}
+    oldSize: {x: 0.22047244, y: 0.03937008}
+    newSize: {x: 0.09, y: 0.09}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.22047244, y: 0.039370075}
+  m_EdgeRadius: 0

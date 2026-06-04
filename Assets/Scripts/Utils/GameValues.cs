@@ -7,14 +7,16 @@ using UnityEngine;
 
 public static class GameConst
 {
-    // Use This With LinearVelocity
-    public const float DEFAULT_SPEED = 50f;
-
     public const float COLLISION_HIT_CD = 0.5f;
 
     public const float GIZMOS_RADIUS_SMALL = 0.04f;
     public const float GIZMOS_RADIUS_MEDIUM = 0.06f;
     public const float GIZMOS_RADIUS_LARGE = 0.08f;
+
+    public const float ANIMATOR_DEFAULT_SPEED = 4f;
+
+    // Camera
+    public const float CAMERA_DEFAULT_LERP_SPEED = 5f;
 }
 
 #endregion
@@ -80,7 +82,6 @@ public static class GameEnums
 
     public enum AnimDir
     {
-        NONE,
         North = 4,
         South = 3,
         East = 1,
@@ -132,6 +133,7 @@ public static class GameSortingLayers
 {
     public const string BACKGROUND = "Background";
     public const string BULLETS = "Bullets";
+    public const string WALLS = "Walls";
 }
 
 #endregion

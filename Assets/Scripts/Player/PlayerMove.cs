@@ -1,16 +1,15 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMove : KHIUnityMethods
+public class PlayerMove : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public PlayerMove(Player newOwner, Rigidbody2D rigidbody2D, float newSpeed)
+    public PlayerMove(Player newOwner, Rigidbody2D rigidbody2D)
     {
         _owner = newOwner;
-        Speed = newSpeed;
         _rb2d = rigidbody2D;
     }
 
@@ -24,6 +23,7 @@ public class PlayerMove : KHIUnityMethods
     private readonly Rigidbody2D _rb2d;
 
     public float Speed { get; private set; }
+    private float _originalSpeed;
     public Vector2 Dir { get; private set; }
 
 
@@ -39,7 +39,7 @@ public class PlayerMove : KHIUnityMethods
 
     public void IStart()
     {
-
+        SetSpeed(_owner.Data.DefaultMoveSpeed);
     }
 
     public void IUpdate()
@@ -82,19 +82,17 @@ public class PlayerMove : KHIUnityMethods
         else
             Dir = new Vector2(0, Dir.y);
 
-        _owner.PAnimator.PlayerMoveDir(Helper.Vector2ToAnimDir(Dir));
-
         if (Dir != Vector2.zero)
         {
             // Player moving
-            _owner.PAnimator.PlayerAttackDir(GameEnums.AnimAttackState.AttackRun);
-            _owner.PAnimator.PlayerRunning(true);
+            _owner.PAnimator.AnimAttackState(GameEnums.AnimAttackState.AttackRun);
+            _owner.PAnimator.AnimRunning(true);
+            _owner.PAnimator.AnimMoveDir(Dir);
         }
         else
         {
-
-            _owner.PAnimator.PlayerAttackDir(GameEnums.AnimAttackState.StationaryAttack);
-            _owner.PAnimator.PlayerRunning(false);
+            _owner.PAnimator.AnimAttackState(GameEnums.AnimAttackState.StationaryAttack);
+            _owner.PAnimator.AnimRunning(false);
         }
     }
 
@@ -103,7 +101,7 @@ public class PlayerMove : KHIUnityMethods
         if (Dir == Vector2.zero && _rb2d.linearVelocity == Vector2.zero)
             return;
 
-        _rb2d.linearVelocity = (GameConst.DEFAULT_SPEED + Speed)
+        _rb2d.linearVelocity = Speed
         * Time.fixedDeltaTime
         * Dir.normalized;
     }
@@ -113,7 +111,26 @@ public class PlayerMove : KHIUnityMethods
     #region PUBLIC METHODS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
+    public void SetSpeed(float newSpeed)
+    {
+        _originalSpeed = newSpeed;
+        Speed = _originalSpeed;
 
+        // sync move speed with animation speed.
+        _owner.PAnimator.SetMoveAnimationSpeed(
+            Speed.MoveSpdToAnimatorSpd());
+
+    }
+
+    public void ApplySpeedReductionWhenAttack()
+    {
+        Speed *= 1 - _owner.Data.DefaultBulletData.DefaultSpeedReduction;
+    }
+
+    public void RestoreOriginalMoveSpeed()
+    {
+        Speed = _originalSpeed;
+    }
 
     #endregion
 }

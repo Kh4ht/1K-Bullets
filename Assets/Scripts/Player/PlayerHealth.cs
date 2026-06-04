@@ -1,4 +1,4 @@
-public class PlayerHealth : KHIUnityMethods
+public class PlayerHealth : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
