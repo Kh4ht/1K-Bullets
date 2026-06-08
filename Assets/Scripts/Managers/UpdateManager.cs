@@ -10,8 +10,9 @@ public class UpdateManager : MonoBehaviour
     private static readonly List<IUpdateObserver> _observers = new();
     private static readonly List<IUpdateObserver> _pendingObservers = new();
     private static readonly List<IUpdateObserver> _pendingFixedObservers = new();
-    private static bool _isUpdating = false;
-    private static bool _isFixedUpdating = false;
+
+    private static bool _isUpdating;
+    private static bool _isFixedUpdating;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -26,59 +27,102 @@ public class UpdateManager : MonoBehaviour
 
     private void Update()
     {
+        CleanupObservers();
+
         _isUpdating = true;
 
         for (int i = _observers.Count - 1; i >= 0; i--)
         {
-            if (i < _observers.Count)
-            {
-                _observers[i].OUpdate();
-            }
+            var observer = _observers[i];
+
+            if (IsInvalid(observer))
+                continue;
+
+            observer.OUpdate();
         }
 
         _isUpdating = false;
 
-        // Add pending observers after update is complete
-        if (_pendingObservers.Count > 0)
-        {
-            _observers.AddRange(_pendingObservers);
-            _pendingObservers.Clear();
-        }
+        FlushPending();
     }
 
     private void FixedUpdate()
     {
+        CleanupObservers();
+
         _isFixedUpdating = true;
 
         for (int i = _observers.Count - 1; i >= 0; i--)
         {
-            if (i < _observers.Count)
-            {
-                _observers[i].OFixedUpdate();
-            }
+            var observer = _observers[i];
+
+            if (IsInvalid(observer))
+                continue;
+
+            observer.OFixedUpdate();
         }
 
         _isFixedUpdating = false;
 
-        // Add pending fixed observers after fixed update is complete
+        FlushPending();
+    }
+
+    #endregion
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+    #region PRIVATE
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    private static void CleanupObservers()
+    {
+        _observers.RemoveAll(IsInvalid);
+        _pendingObservers.RemoveAll(IsInvalid);
+        _pendingFixedObservers.RemoveAll(IsInvalid);
+    }
+
+    private static bool IsInvalid(IUpdateObserver observer)
+    {
+        if (observer == null)
+            return true;
+
+        if (observer is UnityEngine.Object unityObj && unityObj == null)
+            return true;
+
+        return false;
+    }
+
+    private static void FlushPending()
+    {
+        if (_pendingObservers.Count > 0)
+        {
+            for (int i = 0; i < _pendingObservers.Count; i++)
+            {
+                var obs = _pendingObservers[i];
+                if (!IsInvalid(obs) && !_observers.Contains(obs))
+                    _observers.Add(obs);
+            }
+            _pendingObservers.Clear();
+        }
+
         if (_pendingFixedObservers.Count > 0)
         {
-            _observers.AddRange(_pendingFixedObservers);
+            for (int i = 0; i < _pendingFixedObservers.Count; i++)
+            {
+                var obs = _pendingFixedObservers[i];
+                if (!IsInvalid(obs) && !_observers.Contains(obs))
+                    _observers.Add(obs);
+            }
             _pendingFixedObservers.Clear();
         }
     }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PUBLIC METHODS
+    #region STATIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    /// <summary>
-    /// Register an observer to receive both Update and FixedUpdate calls
-    /// </summary>
     public static void RegisterObserver(IUpdateObserver observer)
     {
-        if (observer == null)
+        if (IsInvalid(observer))
             return;
 
         if (_isUpdating || _isFixedUpdating)
@@ -89,89 +133,58 @@ public class UpdateManager : MonoBehaviour
         else
         {
             if (!_observers.Contains(observer))
-            {
                 _observers.Add(observer);
-            }
         }
     }
 
-    /// <summary>
-    /// Register an observer for Update only
-    /// </summary>
     public static void RegisterObserverUpdateOnly(IUpdateObserver observer)
     {
-        if (observer == null) return;
+        if (IsInvalid(observer))
+            return;
 
         if (_isUpdating)
         {
             _pendingObservers.Add(observer);
         }
-        else
+        else if (!_observers.Contains(observer))
         {
-            if (!_observers.Contains(observer))
-            {
-                _observers.Add(observer);
-            }
+            _observers.Add(observer);
         }
     }
 
-    /// <summary>
-    /// Register an observer for FixedUpdate only
-    /// </summary>
-    public static void RegisterObserverFixedUpdateOnly(IUpdateObserver observer)
+    public static void RegisterObserverFixedOnly(IUpdateObserver observer)
     {
-        if (observer == null)
+        if (IsInvalid(observer))
             return;
 
         if (_isFixedUpdating)
         {
             _pendingFixedObservers.Add(observer);
         }
-        else
+        else if (!_observers.Contains(observer))
         {
-            if (!_observers.Contains(observer))
-            {
-                _observers.Add(observer);
-            }
+            _observers.Add(observer);
         }
     }
 
-    /// <summary>
-    /// Unregister an observer from all updates
-    /// </summary>
     public static void UnregisterObserver(IUpdateObserver observer)
     {
-        if (observer == null)
+        if (IsInvalid(observer))
             return;
 
-        // Remove from main list
-        if (!_isUpdating && !_isFixedUpdating)
-        {
-            _observers.Remove(observer);
-        }
-
-        // Remove from pending lists
+        _observers.Remove(observer);
         _pendingObservers.Remove(observer);
         _pendingFixedObservers.Remove(observer);
     }
 
-    /// <summary>
-    /// Clear all registered observers
-    /// </summary>
     public static void ClearAllObservers()
     {
-        if (!_isUpdating && !_isFixedUpdating)
-        {
-            _observers.Clear();
-        }
+        _observers.Clear();
         _pendingObservers.Clear();
         _pendingFixedObservers.Clear();
     }
 
-    /// <summary>
-    /// Check if an observer is registered
-    /// </summary>
-    public static bool IsObserverRegistered(IUpdateObserver observer)
+    public static bool IsRegistered(IUpdateObserver observer)
     {
         return _observers.Contains(observer) ||
                _pendingObservers.Contains(observer) ||

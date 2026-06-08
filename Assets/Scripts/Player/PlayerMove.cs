@@ -7,10 +7,9 @@ public class PlayerMove : IKHIUnityMethods
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public PlayerMove(Player newOwner, Rigidbody2D rigidbody2D)
+    public PlayerMove(Player newOwner)
     {
         _owner = newOwner;
-        _rb2d = rigidbody2D;
     }
 
     private readonly Player _owner;
@@ -20,27 +19,12 @@ public class PlayerMove : IKHIUnityMethods
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    private readonly Rigidbody2D _rb2d;
-
-    public float Speed { get; private set; }
-    private float _originalSpeed;
     public Vector2 Dir { get; private set; }
-
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region UNITY EVENTS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-
-    public void IAwake()
-    {
-
-    }
-
-    public void IStart()
-    {
-        SetSpeed(_owner.Data.DefaultMoveSpeed);
-    }
 
     public void IUpdate()
     {
@@ -52,12 +36,14 @@ public class PlayerMove : IKHIUnityMethods
         Move();
     }
 
+    public void IAwake() { }
+    public void IStart() { }
     public void IOnEnable() { }
     public void IOnDisable() { }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PRIVATE METHODS
+    #region PRIVATE
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     private void UpdateDir()
@@ -98,39 +84,20 @@ public class PlayerMove : IKHIUnityMethods
 
     private void Move()
     {
-        if (Dir == Vector2.zero && _rb2d.linearVelocity == Vector2.zero)
+        if (Dir == Vector2.zero && _owner.Rb2d.linearVelocity == Vector2.zero)
             return;
 
-        _rb2d.linearVelocity = Speed
-        * Time.fixedDeltaTime
-        * Dir.normalized;
+        _owner.Rb2d.linearVelocity = _owner.States.MoveSpeed
+                                     * Time.fixedDeltaTime
+                                     * Dir.normalized;
     }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PUBLIC METHODS
+    #region PUBLIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public void SetSpeed(float newSpeed)
-    {
-        _originalSpeed = newSpeed;
-        Speed = _originalSpeed;
 
-        // sync move speed with animation speed.
-        _owner.PAnimator.SetMoveAnimationSpeed(
-            Speed.MoveSpdToAnimatorSpd());
-
-    }
-
-    public void ApplySpeedReductionWhenAttack()
-    {
-        Speed *= 1 - _owner.Data.DefaultBulletData.DefaultSpeedReduction;
-    }
-
-    public void RestoreOriginalMoveSpeed()
-    {
-        Speed = _originalSpeed;
-    }
 
     #endregion
 }

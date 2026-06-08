@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 785b542f90d7d4a329e89d94d8c30b46, type: 3}
+  m_Name: Heart 1
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeCardData
+  sprite: {fileID: 21300000, guid: 8f8d97c996ae3574f82e9f3803a4266c, type: 3}
+  title: Heart 1
+  impact: + 300 Max Health
+  description: Increases Your Max Health So You Can Take More And Survive.
+  addMaxHealth: 1
+  bonusMaxHealth: 300
+  addPhysicalDamage: 0
+  bonusPhysicalDamage: 1

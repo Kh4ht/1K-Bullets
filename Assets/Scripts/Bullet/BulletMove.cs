@@ -6,12 +6,9 @@ public class BulletMove : IKHIUnityMethods
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public BulletMove(Bullet newOwner, float newMoveSpeed, GameEnums.BulletType bulletType, Vector2 dir)
+    public BulletMove(Bullet newOwner)
     {
         _owner = newOwner;
-        MoveSpeed = newMoveSpeed;
-        BulletType = bulletType;
-        Dir = dir;
     }
 
     private readonly Bullet _owner;
@@ -21,9 +18,7 @@ public class BulletMove : IKHIUnityMethods
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public float MoveSpeed { get; private set; }
-    public GameEnums.BulletType BulletType { get; private set; }
-    public Vector2 Dir { get; private set; }
+
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -37,11 +32,11 @@ public class BulletMove : IKHIUnityMethods
     public void IUpdate() { }
     public void IFixedUpdate()
     {
-        if (BulletType == GameEnums.BulletType.Straight)
+        if (_owner.Data.defaultBulletType == GameEnums.BulletType.Straight)
         {
             MoveStraight();
         }
-        else if (BulletType == GameEnums.BulletType.Following)
+        else if (_owner.Data.defaultBulletType == GameEnums.BulletType.Following)
         {
             FollowTarget();
         }
@@ -54,7 +49,7 @@ public class BulletMove : IKHIUnityMethods
 
     private void MoveStraight()
     {
-        _owner.Rb2d.linearVelocity = MoveSpeed * Time.fixedDeltaTime * Dir;
+        _owner.Rb2d.linearVelocity = _owner.States.moveSpeed * Time.fixedDeltaTime * _owner.States.dir.normalized;
     }
 
     private void FollowTarget()

@@ -1,13 +1,14 @@
+using UnityEngine;
+
 public class PlayerHealth : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public PlayerHealth(Player newOwner, int maxHealth)
+    public PlayerHealth(Player newOwner)
     {
         _owner = newOwner;
-        _maxHealth = maxHealth;
     }
 
     private readonly Player _owner;
@@ -18,7 +19,6 @@ public class PlayerHealth : IKHIUnityMethods
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     public KHHealthController HealthCrtl { get; private set; }
-    private int _maxHealth;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -28,16 +28,17 @@ public class PlayerHealth : IKHIUnityMethods
     public void IOnEnable()
     {
         HealthCrtl.AddOnHealthChangedListener(OnHealthChanged);
+        HealthCrtl.AddOnDeathListener(OnDeath);
     }
     public void IOnDisable()
     {
         HealthCrtl.AddOnHealthChangedListener(OnHealthChanged);
+        HealthCrtl.RemoveOnDeathListener(OnDeath);
     }
 
     public void IAwake()
     {
-        HealthCrtl = new(_maxHealth, _maxHealth);
-
+        HealthCrtl = new(_owner, _owner.Data.DefaultMaxHealth, _owner.Data.DefaultMaxHealth);
     }
 
     public void IStart()
@@ -56,6 +57,15 @@ public class PlayerHealth : IKHIUnityMethods
     private void OnHealthChanged()
     {
         LevelUIManager.Ins.UpdatePlayerHealthSlider(HealthCrtl.MaxHealth, HealthCrtl.Health);
+    }
+
+    private void OnDeath()
+    {
+        Enemy.StopAllEnemiesFromMoving();
+
+        LevelManager.Ins.Lost();
+
+        _owner.Rb2d.linearVelocity = Vector2.zero;
     }
 
     #endregion

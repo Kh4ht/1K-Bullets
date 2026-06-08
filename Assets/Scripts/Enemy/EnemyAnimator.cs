@@ -24,14 +24,6 @@ public class EnemyAnimator : IKHIUnityMethods
 
     // float
     private readonly int DIRECTION = Animator.StringToHash("Direction");
-    private readonly int ATTACK_STATE = Animator.StringToHash("AttackState");
-    private readonly int ATTACK_DIR = Animator.StringToHash("AttackDir");
-
-    // int
-    private readonly int DIR_INDEX = Animator.StringToHash("DirIndex");
-
-    // trigger
-    private readonly int ATTACK = Animator.StringToHash("Attack");
 
     // bool
     private readonly int IS_RUN = Animator.StringToHash("IsRun");
@@ -80,7 +72,7 @@ public class EnemyAnimator : IKHIUnityMethods
 
     public void AnimMoveDir(Vector2 dir)
     {
-        _animator.SetFloat(DIRECTION, (float)Helper.Vector2ToAnimDir(dir));
+        _animator.SetFloat(DIRECTION, (float)Helper.V2ToAnimDir(dir));
     }
 
 

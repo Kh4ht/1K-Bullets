@@ -1,0 +1,114 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class SystemHub : MonoBehaviour
+{
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+    #region FIELDS
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    public static SystemHub Instance { get; private set; }
+
+    private readonly List<IManagedUpdate> _updates = new();
+    private readonly List<IManagedFixedUpdate> _fixedUpdates = new();
+
+    #endregion
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+    #region UNITY EVENTS
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    private void Update()
+    {
+        for (int i = _updates.Count - 1; i >= 0; i--)
+        {
+            if (_updates[i] == null)
+            {
+                _updates.RemoveAt(i);
+                continue;
+            }
+
+            _updates[i].ManagedUpdate();
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        for (int i = _fixedUpdates.Count - 1; i >= 0; i--)
+        {
+            if (_fixedUpdates[i] == null)
+            {
+                _fixedUpdates.RemoveAt(i);
+                continue;
+            }
+
+            _fixedUpdates[i].ManagedFixedUpdate();
+        }
+    }
+
+
+    #endregion
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+    #region PRIVATE
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    public void Add(object obj)
+    {
+        if (obj is IManagedUpdate u && !_updates.Contains(u))
+            _updates.Add(u);
+
+        if (obj is IManagedFixedUpdate f && !_fixedUpdates.Contains(f))
+            _fixedUpdates.Add(f);
+    }
+
+    public void Remove(object obj)
+    {
+        if (obj is IManagedUpdate u)
+            _updates.Remove(u);
+
+        if (obj is IManagedFixedUpdate f)
+            _fixedUpdates.Remove(f);
+    }
+
+    #endregion
+}
+
+// █████████████████████████████████████████████████████████████████████████████████████████████████
+#region INTERFACE
+// █████████████████████████████████████████████████████████████████████████████████████████████████
+
+public interface IManagedUpdate
+{
+    void ManagedUpdate();
+}
+
+public interface IManagedFixedUpdate
+{
+    void ManagedFixedUpdate();
+}
+
+#endregion
+// █████████████████████████████████████████████████████████████████████████████████████████████████
+#region ManagedBehaviour
+// █████████████████████████████████████████████████████████████████████████████████████████████████
+
+public abstract class ManagedBehaviour : MonoBehaviour
+{
+    protected virtual void OnEnable()
+    {
+        if (SystemHub.Instance != null)
+            SystemHub.Instance.Add(this);
+    }
+
+    protected virtual void OnDisable()
+    {
+        if (SystemHub.Instance != null)
+            SystemHub.Instance.Remove(this);
+    }
+}
+
+#endregion

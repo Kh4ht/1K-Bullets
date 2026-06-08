@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5fb263ac807f4f9f90fb22674743d84, type: 3}
+  m_Name: Blue Sapphire
+  m_EditorClassIdentifier: Assembly-CSharp::ExpGemData
+  _sprites:
+  - {fileID: 21300000, guid: 1cb55f984677fae44ae1178b4f3cbf12, type: 3}
+  - {fileID: 21300000, guid: 02a4176c94370314e891de2d46cada6c, type: 3}
+  - {fileID: 21300000, guid: d35c81cfff3d597438b463eea85056f7, type: 3}
+  - {fileID: 21300000, guid: d5179e5ac56c9924aa439b1c7472946d, type: 3}
+  - {fileID: 21300000, guid: f559494ee3e6a7a4c89d9cc5b8d51767, type: 3}
+  - {fileID: 21300000, guid: 0169dc33ffa2e7e45904efaebc7b122d, type: 3}
+  - {fileID: 21300000, guid: 2d16e8740aac64e4cb3c586120fa8d7b, type: 3}
+  - {fileID: 21300000, guid: 17c1f8024f5eaad4490cc405b04f6073, type: 3}
+  - {fileID: 21300000, guid: e4233ef6cdd18b4428f0aedcc7e6ddfc, type: 3}
+  - {fileID: 21300000, guid: 37fea108f4b70724993b1a48109bb24f, type: 3}
+  _prefab: {fileID: -7442711825262789274, guid: ae7c083d4e0ac458788cceb6ddf2bab5, type: 3}
+  _expPoints: 1

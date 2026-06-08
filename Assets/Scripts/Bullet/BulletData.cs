@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 
@@ -6,42 +5,20 @@ using UnityEngine;
 public class BulletData : ScriptableObject
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region FIELDS
+    #region INSPECTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
+    [Header("PREFAB")]
+    public Bullet prefab;
+
+    [HorizontalLine, Header("STATES")]
+    public KHDamage defaultDamage;
+    [Min(0)] public float defaultMoveSpeed = 100f;
+    [Range(0f, 1f)] public float defaultSpeedReduction = 0.1f;
 
 
-    #endregion
-    // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region INSPECTOR FIELDS
-    // █████████████████████████████████████████████████████████████████████████████████████████████████
-
-    // Field
-    [SerializeField] private Bullet _prefab;
-    [SerializeField, ShowAssetPreview] private Sprite _sprite;
-
-    [Space, Space]
-
-    [SerializeField, Min(0)] private float _defaultMoveSpeed = 100f;
-    [SerializeField, Min(0)] private int _defaultDamage = 3;
-    [SerializeField, Range(0f, 1f)] private float _defaultSpeedReduction = 0.1f;
-
-
-    [Header("Bullet Options")]
-    // [SerializeField] private bool _hasAreaDamage;
-    [SerializeField] private GameEnums.BulletType _defaultBulletType = GameEnums.BulletType.Straight;
-    // [SerializeField] private bool _hasKnockBackEffect;
-
-
-    // Getters
-    public float DefaultMoveSpeed => _defaultMoveSpeed;
-    public float DefaultSpeedReduction => _defaultSpeedReduction;
-    public int DefaultDamage => _defaultDamage;
-    // public bool HasAreaDamage => _hasAreaDamage;
-    public Bullet Prefab => _prefab;
-    public Sprite Sprite => _sprite;
-    public GameEnums.BulletType DefaultBulletType => _defaultBulletType;
-
+    [HorizontalLine, Header("TYPE")]
+    public GameEnums.BulletType defaultBulletType = GameEnums.BulletType.Straight;
 
     #endregion
 }

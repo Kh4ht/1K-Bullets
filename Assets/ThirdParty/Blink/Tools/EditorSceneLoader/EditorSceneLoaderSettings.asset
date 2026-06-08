@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: EditorSceneLoaderSettings
   m_EditorClassIdentifier: Assembly-CSharp-Editor::Blink.ThirdParty.EditorSceneLoader.EditorSceneLoaderSettings
   sceneEntries:
-  - displayName: Start Screen
+  - displayName: Start
     scene: {fileID: 102900000, guid: 0de925866d6ad45058035f98163e2a64, type: 3}
   - displayName: Player Screen
     scene: {fileID: 102900000, guid: 160f75b76460c47a5a94b3606a80e19b, type: 3}
   - displayName: 1
-    scene: {fileID: 102900000, guid: 8c9cfa26abfee488c85f1582747f6a02, type: 3}
+    scene: {fileID: 102900000, guid: fc1665dad2bda43938dc3cc24e304855, type: 3}
+  - displayName: Motion Titles Demo
+    scene: {fileID: 102900000, guid: f6190b66105d39141aedf011162ed80c, type: 3}

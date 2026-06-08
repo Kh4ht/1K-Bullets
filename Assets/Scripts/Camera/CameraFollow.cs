@@ -1,7 +1,7 @@
 using UnityEngine;
 
-// [RequireComponent(typeof(BoxCollider2D))]
-public class CameraFollow : MonoBehaviour, IUpdateObserver
+
+public class CameraFollow : ManagedBehaviour, IManagedUpdate
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
@@ -9,15 +9,6 @@ public class CameraFollow : MonoBehaviour, IUpdateObserver
 
     private Transform _target;
     private bool _canFollow = true;
-
-    // Static
-
-    // Components
-    // private BoxCollider2D coll;
-
-    // Systems
-
-    // Getters
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -31,27 +22,15 @@ public class CameraFollow : MonoBehaviour, IUpdateObserver
     #region UNITY EVENTS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    private void OnEnable()
-    {
-        UpdateManager.RegisterObserver(this);
-    }
-
-    private void OnDisable()
-    {
-        UpdateManager.UnregisterObserver(this);
-    }
-
     private void Start()
     {
         _target = LevelManager.Ins.Player.transform;
     }
 
-    public void OUpdate()
+    public void ManagedUpdate()
     {
         CameraFollowTarget();
     }
-
-    public void OFixedUpdate() { }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████

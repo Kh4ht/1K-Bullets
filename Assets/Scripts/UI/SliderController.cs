@@ -1,10 +1,9 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Slider))]
-public class SliderController : MonoBehaviour
+public class SliderController : ManagedBehaviour
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
@@ -42,13 +41,13 @@ public class SliderController : MonoBehaviour
     #region PUBLIC METHODS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public void UpdateSlider(int maxHealth, float health)
+    public void UpdateSlider(int maxValue, float value)
     {
-        _slider.value = health / maxHealth;
+        _slider.value = value / maxValue;
 
         if (_sliderAmount != null)
         {
-            _sliderAmount.text = ((int)health).ToString();
+            _sliderAmount.text = ((int)value).ToString();
         }
     }
 

@@ -28,8 +28,6 @@ public class EnemyHealth : IKHIUnityMethods
 
     public void IOnEnable()
     {
-        HealthCrtl = new(_owner.Data.DefaultMaxHealth, _owner.Data.DefaultMaxHealth);
-
         HealthCrtl.AddOnHealthChangedListener(OnHealthChanged);
         HealthCrtl.AddOnHealthDecreaseListener(OnHealthDecreased);
         HealthCrtl.AddOnMaxHealthListener(OnMaxHealth);
@@ -47,7 +45,7 @@ public class EnemyHealth : IKHIUnityMethods
 
     public void IAwake()
     {
-        HealthCrtl = new(_owner.Data.DefaultMaxHealth, _owner.Data.DefaultMaxHealth);
+        HealthCrtl = new(_owner, _owner.Data.DefaultMaxHealth, _owner.Data.DefaultMaxHealth);
     }
 
     public void IStart()
@@ -80,14 +78,16 @@ public class EnemyHealth : IKHIUnityMethods
 
     private void OnDeath()
     {
+        ExpGem.GetOrCreateNew(_owner.transform.position, _owner.Data.ExpGemData);
         _healthBar.gameObject.SetActive(false);
-        _owner.DisableEnemy();
         LevelManager.Ins.EnemyKilled();
+
+        _owner.DisableEnemy();
     }
 
     private void OnRevive()
     {
-        _healthBar.gameObject.SetActive(true);
+        _healthBar.gameObject.SetActive(false);
     }
 
     #endregion

@@ -1,29 +1,28 @@
 using System.Collections.Generic;
 using UnityEngine;
-using KH;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(CapsuleCollider2D))]
-public class Player : MonoBehaviour, IUpdateObserver
+public class Player : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     // Components
-    private Rigidbody2D _rb2d;
-    private Animator _animator;
+    public Rigidbody2D Rb2d { get; private set; }
+    public Animator Animator { get; private set; }
 
     // Systems
     public PlayerMove PMove { get; private set; }
     public PlayerAnimator PAnimator { get; private set; }
     public PlayerMainGun PMainGun { get; private set; }
     public PlayerHealth PHealth { get; private set; }
+    public PlayerStates States { get; private set; }
 
     private readonly List<IKHIUnityMethods> _systems = new();
 
     // Getters
     public PlayerData Data => _data;
-    // public GameObject EngineFireVFX => _engineFireVFX;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -32,7 +31,6 @@ public class Player : MonoBehaviour, IUpdateObserver
 
     [SerializeField] private PlayerData _data;
 
-
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region UNITY EVENTS
@@ -40,42 +38,45 @@ public class Player : MonoBehaviour, IUpdateObserver
 
     private void Reset()
     {
-        _rb2d = GetComponent<Rigidbody2D>();
+        Rb2d = GetComponent<Rigidbody2D>();
 
-        _rb2d.gravityScale = 0;
-        _rb2d.freezeRotation = true;
+        Rb2d.gravityScale = 0;
+        Rb2d.freezeRotation = true;
         tag = GameTags.PLAYER;
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
-        UpdateManager.RegisterObserver(this);
+        base.OnEnable();
 
         _systems.OnEnableAll();
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
-        UpdateManager.UnregisterObserver(this);
+        base.OnDisable();
 
         _systems.OnDisableAll();
     }
 
     private void Awake()
     {
-        _rb2d = GetComponent<Rigidbody2D>();
-        _animator = GetComponent<Animator>();
+        Rb2d = GetComponent<Rigidbody2D>();
+        Animator = GetComponent<Animator>();
+
+        States = new(this);
+        PAnimator = new(this);
+        PHealth = new(this);
+        PMove = new(this);
+        PMainGun = new(this);
 
         _systems.AddRange(new IKHIUnityMethods[]
         {
-            PAnimator = new(this, animator: _animator),
-            PHealth = new(this,
-                          maxHealth: Data.DefaultMaxHealth),
-            PMove = new(this,
-                        rigidbody2D: _rb2d),
-            PMainGun = new(this,
-                           bulletData: Data.DefaultBulletData,
-                           bulletSpawnPoints: Data.BulletSpawnPoints),
+            States,
+            PAnimator,
+            PHealth,
+            PMove,
+            PMainGun
         });
 
         _systems.AwakeAll();
@@ -86,13 +87,19 @@ public class Player : MonoBehaviour, IUpdateObserver
         _systems.StartAll();
     }
 
-    public void OUpdate()
+    public void ManagedUpdate()
     {
+        if (!LevelManager.Ins.LevelActive)
+            return;
+
         _systems.UpdateAll();
     }
 
-    public void OFixedUpdate()
+    public void ManagedFixedUpdate()
     {
+        if (!LevelManager.Ins.LevelActive)
+            return;
+
         _systems.FixedUpdateAll();
     }
 

@@ -1,9 +1,12 @@
-// █████████████████████████████████████████████████████████████████████████████████████████████████
-#region GameConst
-// █████████████████████████████████████████████████████████████████████████████████████████████████
-
 using System;
+using KH;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+
+// █████████████████████████████████████████████████████████████████████████████████████████████████
+#region Const
+// █████████████████████████████████████████████████████████████████████████████████████████████████
 
 public static class GameConst
 {
@@ -17,11 +20,41 @@ public static class GameConst
 
     // Camera
     public const float CAMERA_DEFAULT_LERP_SPEED = 5f;
+
+    // UI
+    public const float UI_SHOW_SPEED = 0.25f;
+    public const float UI_HIDE_SPEED = 0.2f;
+
 }
 
 #endregion
 // █████████████████████████████████████████████████████████████████████████████████████████████████
-#region GameStructs
+#region PlayerPrefs
+// █████████████████████████████████████████████████████████████████████████████████████████████████
+
+public static class GamePP // Game PlayerPrefs
+{
+    public const string CURRENT_LEVEL = "current_level";
+    public const string GOLD = "gold";
+    public const string RED_CRYSTALS = "red_crystals";
+
+}
+
+#endregion
+// █████████████████████████████████████████████████████████████████████████████████████████████████
+#region Scenes
+// █████████████████████████████████████████████████████████████████████████████████████████████████
+#endregion
+
+public static class GameScenes
+{
+    public const string START = "Start";
+    public const string PLAYER_SCREEN = "Player Screen";
+    public const string _1 = "1";
+}
+
+// █████████████████████████████████████████████████████████████████████████████████████████████████
+#region Structs
 // █████████████████████████████████████████████████████████████████████████████████████████████████
 #endregion
 
@@ -43,37 +76,44 @@ public struct Directions8
     }
 }
 
+[Serializable]
+public struct UpgradeCard
+{
+    public Button cardButton;
+    [Space]
+    public Image image;
+    public TextMeshProUGUI title;
+    public TextMeshProUGUI impact;
+    public TextMeshProUGUI description;
+
+    public void SetRandomUpgrade()
+    {
+        UpgradeCardData pickedCard = GameManager.Ins.Data.upgradeCardDatas.KHPickRandom();
+
+        cardButton.onClick.RemoveAllListeners();
+        cardButton.onClick.AddListener(() =>
+        {
+            pickedCard.ApplyUpgrade();
+
+            LevelManager.Ins.SetLevelActive(true);
+
+            LevelUIManager.Ins.cardsContainer.KH_Hide_Pop();
+
+        });
+
+        image.sprite = pickedCard.sprite;
+        title.text = pickedCard.title;
+        impact.text = pickedCard.impact;
+        description.text = pickedCard.description;
+    }
+}
+
 // █████████████████████████████████████████████████████████████████████████████████████████████████
-#region GameEnums
+#region Enums
 // █████████████████████████████████████████████████████████████████████████████████████████████████
 
 public static class GameEnums
 {
-    public enum PlayerAnimationState
-    {
-        Shooting,
-        Idle,
-        Idle2,
-        Idle3,
-        Idle4,
-        Walk,
-        Run,
-        Crouch,
-        Die,
-        Taunt,
-        TakeDamage,
-        Attack1,
-        Attack2,
-        Attack3,
-        Attack4,
-        Attack5,
-        AttackRun,
-        AttackRun2,
-        Special1,
-        Special2,
-
-    }
-
     public enum BulletType
     {
         Straight,
@@ -92,7 +132,7 @@ public static class GameEnums
         SouthWest = 8,
     }
 
-    public enum AnimAttackDir
+    public enum AnimDirIndex
     {
         NONE,
         North = 3,
@@ -114,7 +154,7 @@ public static class GameEnums
 
 #endregion
 // █████████████████████████████████████████████████████████████████████████████████████████████████
-#region GameTags
+#region Tags
 // █████████████████████████████████████████████████████████████████████████████████████████████████
 
 public static class GameTags
@@ -122,11 +162,12 @@ public static class GameTags
     public const string PLAYER = "Player";
     public const string ENEMY = "Enemy";
     public const string WALLS = "Walls";
+    public const string EXP_GEM = "ExpGem";
 }
 
 #endregion
 // █████████████████████████████████████████████████████████████████████████████████████████████████
-#region GameSortingLayers
+#region SortingLayers
 // █████████████████████████████████████████████████████████████████████████████████████████████████
 
 public static class GameSortingLayers

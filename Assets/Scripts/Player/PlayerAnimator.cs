@@ -6,14 +6,13 @@ public class PlayerAnimator : IKHIUnityMethods
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public PlayerAnimator(Player newOwner, Animator animator)
+    public PlayerAnimator(Player newOwner)
     {
         _owner = newOwner;
-        _animator = animator;
+
     }
 
     private readonly Player _owner;
-    private readonly Animator _animator;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -33,6 +32,7 @@ public class PlayerAnimator : IKHIUnityMethods
 
     // trigger
     private readonly int ATTACK = Animator.StringToHash("Attack");
+    private readonly int DIE = Animator.StringToHash("Die");
 
     // bool
     private readonly int IS_RUN = Animator.StringToHash("IsRun");
@@ -44,7 +44,7 @@ public class PlayerAnimator : IKHIUnityMethods
 
     public void IAwake()
     {
-        _animator.speed = GameConst.ANIMATOR_DEFAULT_SPEED;
+        _owner.Animator.speed = GameConst.ANIMATOR_DEFAULT_SPEED;
     }
 
     public void IStart()
@@ -72,39 +72,46 @@ public class PlayerAnimator : IKHIUnityMethods
     public void SetMoveAnimationSpeed(float speed)
     {
         MoveAnimationSpeed = speed;
-        _animator.speed = MoveAnimationSpeed;
+        _owner.Animator.speed = MoveAnimationSpeed;
     }
+
     public void SetAttackAnimationSpeed(float speed)
     {
         AttackAnimationSpeed = speed;
-        _animator.speed = AttackAnimationSpeed;
+        _owner.Animator.speed = AttackAnimationSpeed;
     }
 
     public void AnimRunning(bool isRunning)
     {
-        _animator.SetBool(IS_RUN, isRunning);
+        _owner.Animator.SetBool(IS_RUN, isRunning);
     }
 
     public void AnimMoveDir(Vector2 dir)
     {
-        _animator.SetFloat(DIRECTION, (float)Helper.PlayerMoveDirToAnimDir(dir));
+        _owner.Animator.SetFloat(DIRECTION, (float)Helper.PlayerMoveDirToAnimDir(dir));
     }
 
     public void AnimAttack(Vector2 dir)
     {
-        _animator.SetTrigger(ATTACK);
-        _animator.SetFloat(ATTACK_DIR, (float)Helper.Vector2ToAnimDir(dir));
+        _owner.Animator.SetTrigger(ATTACK);
+        _owner.Animator.SetFloat(ATTACK_DIR, (float)Helper.V2ToAnimDir(dir));
     }
 
     public void AnimUpdateAttackDir(Vector2 dir)
     {
-        _animator.SetFloat(ATTACK_DIR, (float)Helper.Vector2ToAnimDir(dir));
+        _owner.Animator.SetFloat(ATTACK_DIR, (float)Helper.V2ToAnimDir(dir));
         AnimMoveDir(dir);
     }
 
     public void AnimAttackState(GameEnums.AnimAttackState animAttackState)
     {
-        _animator.SetFloat(ATTACK_STATE, (float)animAttackState);
+        _owner.Animator.SetFloat(ATTACK_STATE, (float)animAttackState);
+    }
+
+    public void AnimDeathTrigger(Vector2 lastDamageTakenDir)
+    {
+        _owner.Animator.SetTrigger(DIE);
+        _owner.Animator.SetInteger(DIR_INDEX, (int)Helper.V2ToAnimDirIndex(lastDamageTakenDir));
     }
 
     #endregion

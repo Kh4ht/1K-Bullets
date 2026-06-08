@@ -69,6 +69,12 @@ public class EnemyMove : IKHIUnityMethods
 
     private void UpdateDir()
     {
+        if (_owner == null)
+        {
+            Debug.LogError("OWNER DESTROYED");
+            return;
+        }
+
         Dir = Kh.GetDir(_owner, _targetPlayer);
 
         if (Dir != Vector2.zero)

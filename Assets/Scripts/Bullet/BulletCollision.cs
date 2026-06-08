@@ -6,11 +6,9 @@ public class BulletCollision : IKHIUnityMethods
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public BulletCollision(Bullet newOwner, string targetTag, float damage)
+    public BulletCollision(Bullet newOwner)
     {
         _owner = newOwner;
-        _targetTag = targetTag;
-        _damage = damage;
     }
 
     private readonly Bullet _owner;
@@ -20,8 +18,7 @@ public class BulletCollision : IKHIUnityMethods
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    private string _targetTag;
-    private float _damage;
+
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -42,14 +39,14 @@ public class BulletCollision : IKHIUnityMethods
 
     private void HitPlayer(Player player)
     {
-        player.PHealth.HealthCrtl.RemoveHealth(_damage);
+        player.PHealth.HealthCrtl.ApplyDamage(_owner.States.damage);
 
         AfterHit();
     }
 
     private void HitEnemy(Enemy enemy)
     {
-        enemy.EHealth.HealthCrtl.RemoveHealth(_damage);
+        enemy.EHealth.HealthCrtl.ApplyDamage(_owner.States.damage);
 
         AfterHit();
     }
@@ -68,7 +65,7 @@ public class BulletCollision : IKHIUnityMethods
 
     public void OnHitTarget(Collider2D collision)
     {
-        if (!collision.gameObject.CompareTag(_targetTag))
+        if (!collision.gameObject.CompareTag(_owner.States.targetTag))
             return;
 
         if (collision.gameObject.TryGetComponent(out Player player))

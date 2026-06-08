@@ -22,7 +22,7 @@ public class EnemyCollision : IKHIUnityMethods
     private readonly KHTimer _collTimer = new();
     private Player _targetPlayer;
 
-    public int Damage { get; private set; }
+    public KHDamage Damage { get; private set; }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -56,7 +56,12 @@ public class EnemyCollision : IKHIUnityMethods
 
     private void HitPlayer(Player player)
     {
-        player.PHealth.HealthCrtl.RemoveHealth(Damage);
+        player.PHealth.HealthCrtl.ApplyDamage(Damage);
+
+        if (player.PHealth.HealthCrtl.IsDead)
+        {
+            player.PAnimator.AnimDeathTrigger(-_owner.EMove.Dir);
+        }
     }
 
     #endregion

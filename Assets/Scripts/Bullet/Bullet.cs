@@ -3,7 +3,7 @@ using UnityEngine;
 using KH;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D), typeof(SpriteRenderer))]
-public class Bullet : MonoBehaviour, IUpdateObserver
+public class Bullet : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
@@ -12,6 +12,7 @@ public class Bullet : MonoBehaviour, IUpdateObserver
     // Static
     public static List<Bullet> DisabledBullets { get; private set; } = new();
     private static GameObject _bulletContainer;
+    private static int _bulletsCounter = 0;
 
     // Components
     public Rigidbody2D Rb2d { get; private set; }
@@ -21,17 +22,19 @@ public class Bullet : MonoBehaviour, IUpdateObserver
     // Systems
     public BulletMove BMove { get; private set; }
     public BulletCollision BCollision { get; private set; }
+    public BulletStates States { get; private set; }
 
     private readonly List<IKHIUnityMethods> _systems = new();
 
     // Getters
+    public BulletData Data => _data;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region INSPECTOR FIELDS
+    #region INSPECTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-
+    [SerializeField] private BulletData _data;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -48,14 +51,18 @@ public class Bullet : MonoBehaviour, IUpdateObserver
         GetComponent<SpriteRenderer>().sortingLayerName = GameSortingLayers.BULLETS;
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
-        UpdateManager.RegisterObserver(this);
+        base.OnEnable();
+
+        _systems.OnEnableAll();
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
-        UpdateManager.UnregisterObserver(this);
+        base.OnDisable();
+
+        _systems.OnDisableAll();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -68,6 +75,15 @@ public class Bullet : MonoBehaviour, IUpdateObserver
         Rb2d = GetComponent<Rigidbody2D>();
         Coll2d = GetComponent<Collider2D>();
         SpriteR = GetComponent<SpriteRenderer>();
+
+        States = new(this);
+        BMove = new(this);
+        BCollision = new(this);
+
+        _systems.Clear();
+        _systems.AddRange(new IKHIUnityMethods[] { States, BMove, BCollision, });
+
+        _systems.KHForEach(p => p.IAwake());
     }
 
     private void Start()
@@ -75,46 +91,40 @@ public class Bullet : MonoBehaviour, IUpdateObserver
         _systems.KHForEach(p => p.IStart());
     }
 
-    public void OUpdate()
+    public void ManagedUpdate()
     {
         _systems.KHForEach(p => p.IUpdate());
     }
 
-    public void OFixedUpdate()
+    public void ManagedFixedUpdate()
     {
         _systems.KHForEach(p => p.IFixedUpdate());
     }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PRIVATE METHODS
+    #region PRIVATE
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     /// <summary>
     /// This is made for the reusable objects to reset their values.
     /// </summary>
-    private Bullet ResetBullet(BulletData bulletData, Vector2 dir, string targetTag)
+    private Bullet ResetBullet(Vector2 spawnPosition,
+                               Quaternion spawnRotation,
+                               BulletStates bulletStates)
     {
-        BMove = new(this,
-                         newMoveSpeed: bulletData.DefaultMoveSpeed,
-                         bulletType: bulletData.DefaultBulletType,
-                         dir: dir.normalized);
+        gameObject.SetActive(true);
 
-        BCollision = new(this,
-                         targetTag: targetTag,
-                         damage: bulletData.DefaultDamage);
+        transform.SetLocalPositionAndRotation(spawnPosition, spawnRotation);
 
-        _systems.Clear();
-        _systems.AddRange(new IKHIUnityMethods[] { BMove, BCollision, });
-
-        SpriteR.sprite = bulletData.Sprite;
+        States.ResetStates(bulletStates);
 
         return this;
     }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PUBLIC METHODS
+    #region PUBLIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     public void DisableBullet()
@@ -125,31 +135,47 @@ public class Bullet : MonoBehaviour, IUpdateObserver
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region STATIC METHODS
+    #region STATIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public static Bullet GetOrCreateBullet(Vector2 spawnPoint, Quaternion rot, BulletData bulletData, Vector2 dir, string targetTag)
+    public static void ResetStaticFields()
+    {
+        DisabledBullets.Clear();
+        _bulletsCounter = 0;
+        _bulletContainer = null;
+    }
+
+    public static Bullet GetOrCreateBullet(Vector2 spawnPosition,
+                                           Quaternion spawnRotation,
+                                           BulletStates bulletStates,
+                                           Bullet prefab)
     {
         if (_bulletContainer == null)
         {
-            _bulletContainer = new GameObject("Bullets");
+            _bulletContainer = new GameObject($"Bullets: {_bulletsCounter}");
         }
+
+        Bullet selectedBullet;
 
         if (DisabledBullets.KHIsEmpty())
         {
+            _bulletsCounter++;
+            _bulletContainer.name = $"Bullets: {_bulletsCounter}";
+
             // Case 1: Create New Bullet
-            return Instantiate(bulletData.Prefab, spawnPoint, rot, _bulletContainer.transform).ResetBullet(bulletData, dir, targetTag);
+            selectedBullet = Instantiate(prefab, _bulletContainer.transform);
         }
         else
         {
             // Get Disabled Bullet
-            Bullet selectedBullet = DisabledBullets[0];
+            selectedBullet = DisabledBullets[0];
 
             DisabledBullets.Remove(selectedBullet);
-            selectedBullet.gameObject.SetActive(true); // TEST: move this to the last to see if previous lines will work, or you need to set it to active first for them to work.
-            selectedBullet.transform.SetLocalPositionAndRotation(spawnPoint, rot);
-            return selectedBullet.ResetBullet(bulletData, dir, targetTag);
         }
+
+        return selectedBullet.ResetBullet(spawnPosition,
+                                          spawnRotation,
+                                          bulletStates);
     }
 
     #endregion

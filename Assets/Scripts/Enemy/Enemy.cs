@@ -3,7 +3,7 @@ using UnityEngine;
 using KH;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(CapsuleCollider2D))]
-public class Enemy : MonoBehaviour, IUpdateObserver
+public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
@@ -11,10 +11,11 @@ public class Enemy : MonoBehaviour, IUpdateObserver
 
     // Static
     public static List<Enemy> DisabledEnemies { get; private set; } = new();
+    public static List<Enemy> EnabledEnemies { get; private set; } = new();
     private static GameObject _enemyContainer;
 
     // Components
-    private Rigidbody2D _rb2d;
+    public Rigidbody2D Rb2d { get; private set; }
     private Animator _animator;
 
     // Systems
@@ -30,7 +31,7 @@ public class Enemy : MonoBehaviour, IUpdateObserver
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region INSPECTOR FIELDS
+    #region INSPECTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     [SerializeField] private EnemyData _data;
@@ -43,36 +44,36 @@ public class Enemy : MonoBehaviour, IUpdateObserver
 
     private void Reset()
     {
-        _rb2d = GetComponent<Rigidbody2D>();
+        Rb2d = GetComponent<Rigidbody2D>();
 
-        _rb2d.gravityScale = 0;
-        _rb2d.freezeRotation = true;
+        Rb2d.gravityScale = 0;
+        Rb2d.freezeRotation = true;
         tag = GameTags.ENEMY;
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
-        UpdateManager.RegisterObserver(this);
+        base.OnEnable();
 
-        _systems.KHForEach(p => p.IOnEnable());
+        _systems.OnEnableAll();
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
-        UpdateManager.UnregisterObserver(this);
+        base.OnDisable();
 
-        _systems.KHForEach(p => p.IOnDisable());
+        _systems.OnDisableAll();
     }
 
     private void Awake()
     {
-        _rb2d = GetComponent<Rigidbody2D>();
+        Rb2d = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
 
         _systems.AddRange(new IKHIUnityMethods[]
         {
             EMove = new(this,
-                        rb2d: _rb2d),
+                        rb2d: Rb2d),
             ECollision = new(this),
             EAnimator = new(this,
                             healthBar: _healthBar,
@@ -89,13 +90,19 @@ public class Enemy : MonoBehaviour, IUpdateObserver
         _systems.KHForEach(p => p.IStart());
     }
 
-    public void OUpdate()
+    public void ManagedUpdate()
     {
+        if (!LevelManager.Ins.LevelActive)
+            return;
+
         _systems.KHForEach(p => p.IUpdate());
     }
 
-    public void OFixedUpdate()
+    public void ManagedFixedUpdate()
     {
+        if (!LevelManager.Ins.LevelActive)
+            return;
+
         _systems.KHForEach(p => p.IFixedUpdate());
     }
 
@@ -106,7 +113,7 @@ public class Enemy : MonoBehaviour, IUpdateObserver
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PRIVATE METHODS
+    #region PRIVATE
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     /// <summary>
@@ -121,31 +128,44 @@ public class Enemy : MonoBehaviour, IUpdateObserver
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PUBLIC METHODS
+    #region PUBLIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     public void DisableEnemy()
     {
         gameObject.SetActive(false);
+        EnabledEnemies.Remove(this);
         DisabledEnemies.Add(this);
     }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region STATIC METHODS
+    #region STATIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    public static void ResetStaticFields()
+    {
+        EnabledEnemies.Clear();
+        DisabledEnemies.Clear();
+        _enemyContainer = null;
+    }
 
     public static Enemy GetOrCreateEnemy(Vector2 spawnPoint, EnemyData enemyData)
     {
         if (_enemyContainer == null)
         {
-            _enemyContainer = new GameObject("Enemies");
+            _enemyContainer = new GameObject($"Enemies: {EnabledEnemies.Count + DisabledEnemies.Count}");
         }
 
         if (DisabledEnemies.KHIsEmpty())
         {
             // Case 1: Create New
-            return Instantiate(enemyData.Prefab, spawnPoint, Quaternion.Euler(0, 0, 0), _enemyContainer.transform);
+            Enemy newEnemy = Instantiate(enemyData.Prefab, spawnPoint, Quaternion.Euler(0, 0, 0), _enemyContainer.transform);
+            EnabledEnemies.Add(newEnemy);
+
+            _enemyContainer.name = $"Enemies: {EnabledEnemies.Count + DisabledEnemies.Count}";
+
+            return newEnemy;
         }
         else
         {
@@ -153,10 +173,21 @@ public class Enemy : MonoBehaviour, IUpdateObserver
             Enemy selectedEnemy = DisabledEnemies[0];
 
             DisabledEnemies.Remove(selectedEnemy);
+            EnabledEnemies.Add(selectedEnemy);
             selectedEnemy.gameObject.SetActive(true); // TEST: move this to the last to see if previous lines will work, or you need to set it to active first for them to work.
             selectedEnemy.transform.position = spawnPoint;
+
             return selectedEnemy.ResetEnemy();
         }
+    }
+
+    public static void StopAllEnemiesFromMoving()
+    {
+        EnabledEnemies.KHForEach((enemy) =>
+        {
+            enemy.EAnimator.AnimRunning(false);
+            enemy.Rb2d.linearVelocity = Vector2.zero;
+        });
     }
 
     #endregion

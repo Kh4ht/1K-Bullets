@@ -8,18 +8,13 @@ public class PlayerMainGun : IKHIUnityMethods
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public PlayerMainGun(Player newOwner,
-                         BulletData bulletData,
-                         Directions8 bulletSpawnPoints)
+    public PlayerMainGun(Player newOwner)
     {
         _owner = newOwner;
-        _bulletData = bulletData;
-        _bulletSpawnPoints = bulletSpawnPoints;
+
     }
 
     private readonly Player _owner;
-    private readonly BulletData _bulletData;
-    private readonly Directions8 _bulletSpawnPoints;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -56,7 +51,7 @@ public class PlayerMainGun : IKHIUnityMethods
             IsAttacking = true;
 
             _owner.PAnimator.AnimAttack(
-                Kh.GetDir(_owner.transform.position, GameManager.MouseWorldPos));
+                Kh.GetDir(_owner.transform.position, Kh.GetMouseWorldPos()));
         }
     }
 
@@ -67,13 +62,12 @@ public class PlayerMainGun : IKHIUnityMethods
 
     public void FireBullet()
     {
-        Vector2 playerToMouseDir = Kh.GetDir(_owner.transform.position, GameManager.MouseWorldPos);
+        Vector2 playerToMouseDir = Kh.GetDir(_owner.transform.position, Kh.GetMouseWorldPos());
 
-        Bullet.GetOrCreateBullet(Helper.DirToBulletSpawnPoint(playerToMouseDir, _bulletSpawnPoints) + _owner.transform.position,
+        Bullet.GetOrCreateBullet(Helper.DirToBulletSpawnPoint(playerToMouseDir, _owner.Data.BulletSpawnPoints) + _owner.transform.position,
                                  Quaternion.Euler(0, 0, Kh.KHGetAngle(playerToMouseDir)),
-                                 _bulletData,
-                                 playerToMouseDir,
-                                 GameTags.ENEMY);
+                                 new BulletStates(_owner.States.bulletMoveSpeed, _owner.States.bulletDamage, playerToMouseDir, GameTags.ENEMY),
+                                 _owner.Data.DefaultBulletData.prefab);
     }
 
     #endregion

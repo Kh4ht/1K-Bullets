@@ -21,7 +21,7 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
             player = animator.GetComponent<Player>();
 
         player.PAnimator.SetAttackAnimationSpeed(player.PAnimator.AttackAnimationSpeed);
-        player.PMove.ApplySpeedReductionWhenAttack();
+        player.States.ApplySpeedReductionWhenAttack();
 
         _fired = false;
 
@@ -42,7 +42,7 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
         player.PAnimator.AnimUpdateAttackDir(
             Kh.GetDir(
                 player.transform.position,
-                GameManager.MouseWorldPos));
+                Kh.GetMouseWorldPos()));
 
         int currentFrame = Mathf.FloorToInt(
             (stateInfo.normalizedTime % 1f) * totalFrames);
@@ -70,7 +70,7 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
         int layerIndex)
     {
         player.PAnimator.SetMoveAnimationSpeed(player.PAnimator.MoveAnimationSpeed);
-        player.PMove.RestoreOriginalMoveSpeed();
+        player.States.RestoreOriginalMoveSpeed();
     }
 
     #endregion

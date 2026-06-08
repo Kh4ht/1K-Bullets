@@ -7,7 +7,7 @@ public static class Helper
     #region Vector2ToAnimDir
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public static GameEnums.AnimDir Vector2ToAnimDir(Vector2 vector2)
+    public static GameEnums.AnimDir V2ToAnimDir(Vector2 vector2)
     {
         float angle = Kh.KHGetAngle(vector2);
 
@@ -49,6 +49,56 @@ public static class Helper
         else // (angle >= 315 && angle < 360)
         {
             return GameEnums.AnimDir.SouthEast; // Southeast
+        }
+    }
+
+    #endregion
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+    #region Vector2ToAnimDir
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    public static GameEnums.AnimDirIndex V2ToAnimDirIndex(Vector2 vector2)
+    {
+        float angle = Kh.KHGetAngle(vector2);
+
+        // Normalize angle to 0-360 range
+        angle = angle % 360;
+        if (angle < 0) angle += 360;
+
+        // Add half of 45° (22.5°) to center the ranges
+        angle += 22.5f;
+
+        if (angle >= 0 && angle < 45)
+        {
+            return GameEnums.AnimDirIndex.East; // East
+        }
+        else if (angle >= 45 && angle < 90)
+        {
+            return GameEnums.AnimDirIndex.NorthEast; // Northeast
+        }
+        else if (angle >= 90 && angle < 135)
+        {
+            return GameEnums.AnimDirIndex.North; // North
+        }
+        else if (angle >= 135 && angle < 180)
+        {
+            return GameEnums.AnimDirIndex.NorthWest; // Northwest
+        }
+        else if (angle >= 180 && angle < 225)
+        {
+            return GameEnums.AnimDirIndex.West; // West
+        }
+        else if (angle >= 225 && angle < 270)
+        {
+            return GameEnums.AnimDirIndex.SouthWest; // Southwest
+        }
+        else if (angle >= 270 && angle < 315)
+        {
+            return GameEnums.AnimDirIndex.South; // South
+        }
+        else // (angle >= 315 && angle < 360)
+        {
+            return GameEnums.AnimDirIndex.SouthEast; // Southeast
         }
     }
 

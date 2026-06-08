@@ -12,9 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07591df3a4bae459981071279a2a73a2, type: 3}
   m_Name: Player Bullet 1
   m_EditorClassIdentifier: Assembly-CSharp::BulletData
-  _prefab: {fileID: 3417091988106208025, guid: a4dff757cc2e54ac4870cf2efea45111, type: 3}
-  _sprite: {fileID: -6467468420610768305, guid: c3b4ba8f1fd944c328a1543727a61590, type: 3}
-  _defaultMoveSpeed: 150
-  _defaultDamage: 7
-  _defaultSpeedReduction: 0.1
-  _defaultBulletType: 0
+  prefab: {fileID: 3417091988106208025, guid: a4dff757cc2e54ac4870cf2efea45111, type: 3}
+  defaultDamage:
+    physical:
+      damage: 6
+    fire:
+      damage: 0
+      subDamage: 0
+      duration: 0
+      interval: 0
+    poison:
+      damage: 0
+      subDamage: 0
+      duration: 0
+      interval: 0
+  defaultMoveSpeed: 200
+  defaultSpeedReduction: 0.1
+  defaultBulletType: 0
