@@ -7,21 +7,19 @@ public class EnemyMove : IKHIUnityMethods
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public EnemyMove(Enemy newOwner, Rigidbody2D rb2d)
+    public EnemyMove(Enemy newOwner)
     {
         _owner = newOwner;
-        _rb2d = rb2d;
     }
 
     private readonly Enemy _owner;
-    private readonly Rigidbody2D _rb2d;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public float Speed { get; private set; }
+
     public Vector2 Dir { get; private set; }
 
     private Player _targetPlayer;
@@ -34,9 +32,7 @@ public class EnemyMove : IKHIUnityMethods
 
     public void IStart()
     {
-        _targetPlayer = GameObject.FindGameObjectWithTag(GameTags.PLAYER).GetComponent<Player>();
-
-        SetSpeed(_owner.Data.DefaultMoveSpeed);
+        _targetPlayer = LevelManager.Ins.Player;
     }
 
     public void IUpdate()
@@ -52,9 +48,6 @@ public class EnemyMove : IKHIUnityMethods
 
     public void IFixedUpdate()
     {
-        if (_owner.EHealth.HealthCrtl.IsDead)
-            return;
-
         Move();
     }
 
@@ -64,7 +57,7 @@ public class EnemyMove : IKHIUnityMethods
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PRIVATE METHODS
+    #region PRIVATE
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     private void UpdateDir()
@@ -86,23 +79,20 @@ public class EnemyMove : IKHIUnityMethods
 
     private void Move()
     {
-        _rb2d.linearVelocity = Speed
+        if (_owner.EHealth.HealthCrtl.IsDead)
+            return;
+
+        _owner.Rb2d.AddForce(_owner.Stats.moveSpeed
             * Time.fixedDeltaTime
-            * Dir.normalized;
+            * Dir.normalized);
     }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PUBLIC METHODS
+    #region PUBLIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public void SetSpeed(float newSpeed)
-    {
-        Speed = newSpeed;
-        _owner.EAnimator.SetAnimatorSpeed(
-            Speed.MoveSpdToAnimatorSpd()
-        );
-    }
+
 
     #endregion
 }

@@ -1,3 +1,4 @@
+using KH;
 using UnityEngine;
 
 public class PlayerHealth : IKHIUnityMethods
@@ -29,11 +30,13 @@ public class PlayerHealth : IKHIUnityMethods
     {
         HealthCrtl.AddOnHealthChangedListener(OnHealthChanged);
         HealthCrtl.AddOnDeathListener(OnDeath);
+        HealthCrtl.AddOnMaxHealthChangedListener(OnMaxHealthChanged);
     }
     public void IOnDisable()
     {
         HealthCrtl.AddOnHealthChangedListener(OnHealthChanged);
         HealthCrtl.RemoveOnDeathListener(OnDeath);
+        HealthCrtl.RemoveOnMaxHealthChangedListener(OnMaxHealthChanged);
     }
 
     public void IAwake()
@@ -66,6 +69,11 @@ public class PlayerHealth : IKHIUnityMethods
         LevelManager.Ins.Lost();
 
         _owner.Rb2d.linearVelocity = Vector2.zero;
+    }
+
+    private void OnMaxHealthChanged()
+    {
+        LevelUIManager.Ins.UpdatePlayerHealthSlider(HealthCrtl.MaxHealth, HealthCrtl.Health);
     }
 
     #endregion

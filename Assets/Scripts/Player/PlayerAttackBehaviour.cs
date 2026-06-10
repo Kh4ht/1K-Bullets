@@ -20,9 +20,6 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
         if (player == null)
             player = animator.GetComponent<Player>();
 
-        player.PAnimator.SetAttackAnimationSpeed(player.PAnimator.AttackAnimationSpeed);
-        player.States.ApplySpeedReductionWhenAttack();
-
         _fired = false;
 
         AnimationClip clip = animator.GetCurrentAnimatorClipInfo(layerIndex)[0].clip;
@@ -52,11 +49,6 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
             _fired = true;
             player.PMainGun.FireBullet();
         }
-
-        if (totalFrames - currentFrame <= 2)
-        {
-            player.PMainGun.IsAttacking = false;
-        }
     }
 
     #endregion
@@ -69,8 +61,7 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
         AnimatorStateInfo stateInfo,
         int layerIndex)
     {
-        player.PAnimator.SetMoveAnimationSpeed(player.PAnimator.MoveAnimationSpeed);
-        player.States.RestoreOriginalMoveSpeed();
+        player.Stats.IsAttacking = false;
     }
 
     #endregion

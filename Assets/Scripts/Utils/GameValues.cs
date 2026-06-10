@@ -18,6 +18,8 @@ public static class GameConst
 
     public const float ANIMATOR_DEFAULT_SPEED = 4f;
 
+    public const float LINEAR_DAMPING = 15f;
+
     // Camera
     public const float CAMERA_DEFAULT_LERP_SPEED = 5f;
 
@@ -86,10 +88,8 @@ public struct UpgradeCard
     public TextMeshProUGUI impact;
     public TextMeshProUGUI description;
 
-    public void SetRandomUpgrade()
+    public void SetCard(UpgradeCardData pickedCard)
     {
-        UpgradeCardData pickedCard = GameManager.Ins.Data.upgradeCardDatas.KHPickRandom();
-
         cardButton.onClick.RemoveAllListeners();
         cardButton.onClick.AddListener(() =>
         {
@@ -98,7 +98,6 @@ public struct UpgradeCard
             LevelManager.Ins.SetLevelActive(true);
 
             LevelUIManager.Ins.cardsContainer.KH_Hide_Pop();
-
         });
 
         image.sprite = pickedCard.sprite;

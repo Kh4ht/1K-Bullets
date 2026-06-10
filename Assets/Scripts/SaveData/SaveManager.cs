@@ -1,58 +1,101 @@
+using System.Collections;
 using KH;
+using NaughtyAttributes;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class PlayerMainGun : IKHIUnityMethods
+public class SaveManager : MonoBehaviour
 {
-    // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region CONSTRUCTOR
-    // █████████████████████████████████████████████████████████████████████████████████████████████████
-
-    public PlayerMainGun(Player newOwner)
-    {
-        _owner = newOwner;
-
-    }
-
-    private readonly Player _owner;
-
-    #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
+    private static SaveManager Ins;
 
+    public static SaveData GameSaveData;
+
+    private Coroutine autoSaveRoutine;
+
+    private static bool isDirty;
+    private static float lastSaveTime;
+    private static float saveCooldown = 1f;
+
+    // Properties
+    public static int Gold
+    {
+        get => GameSaveData.gold;
+        set
+        {
+            GameSaveData.gold = value;
+            MarkDirty();
+        }
+    }
+
+    #endregion
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+    #region INSPECTOR
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    [Tooltip("Enable periodic autosave")]
+    public bool enableAutoSave = true;
+
+    [ShowIf("enableAutoSave"), Tooltip("Save every N seconds when enabled")]
+    public float autoSaveInterval = 30f;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region UNITY EVENTS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public void IUpdate()
+    private void Awake()
     {
-        ClickToShoot();
-    }
+        if (Ins != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
-    public void IAwake() { }
-    public void IStart() { }
-    public void IFixedUpdate() { }
-    public void IOnEnable() { }
-    public void IOnDisable() { }
+        Ins = this;
+        DontDestroyOnLoad(gameObject);
+
+        LoadGame();
+    }
+    private void OnEnable()
+    {
+        if (enableAutoSave && autoSaveRoutine == null)
+            autoSaveRoutine = StartCoroutine(AutoSaveCoroutine());
+    }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region PRIVATE
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    private void ClickToShoot()
+    private IEnumerator AutoSaveCoroutine()
     {
-        if (Mouse.current.leftButton.isPressed && !_owner.Stats.IsAttacking)
+        while (enableAutoSave)
         {
-            _owner.Stats.IsAttacking = true;
-
-            _owner.PAnimator.AnimAttack(
-                Kh.GetDir(_owner.transform.position, Kh.GetMouseWorldPos()));
+            yield return new WaitForSeconds(autoSaveInterval);
+            SaveGame();
+            Debug.Log($"[{nameof(SaveManager)}] Auto -saved.");
         }
+    }
+
+    private void OnApplicationPause(bool pause)
+    {
+        if (pause)
+            SaveGame();
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveGame();
+    }
+
+    [Button]
+    private void ManualSave()
+    {
+        SaveGame();
+        KHDebug.Log($"[{nameof(SaveManager)}] Manually-saved.");
     }
 
     #endregion
@@ -60,18 +103,31 @@ public class PlayerMainGun : IKHIUnityMethods
     #region PUBLIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public void FireBullet()
+    public static void SaveGame(bool force = false)
     {
-        Vector2 playerToMouseDir = Kh.GetDir(_owner.transform.position, Kh.GetMouseWorldPos());
+        if (!force && !isDirty)
+            return;
 
-        Bullet.GetOrCreateBullet(Helper.DirToBulletSpawnPoint(playerToMouseDir, _owner.Data.BulletSpawnPoints) + _owner.transform.position,
-                                 Quaternion.Euler(0, 0, Kh.KHGetAngle(playerToMouseDir)),
-                                 new BulletStates(_owner.Stats.bulletMoveSpeed,
-                                                  _owner.Stats.bulletDamage,
-                                                  _owner.Stats.bulletKnockBackForce,
-                                                  playerToMouseDir,
-                                                  GameTags.ENEMY),
-                                 _owner.Data.DefaultBulletData.prefab);
+        if (Time.time - lastSaveTime < saveCooldown)
+            return;
+
+        lastSaveTime = Time.time;
+
+        GameSaveData ??= new SaveData();
+        KHSaveSystem.Save(GameSaveData);
+
+        isDirty = false;
+    }
+
+    public static void LoadGame()
+    {
+        GameSaveData = KHSaveSystem.Load<SaveData>();
+        GameSaveData ??= new SaveData();
+    }
+
+    public static void MarkDirty()
+    {
+        isDirty = true;
     }
 
     #endregion

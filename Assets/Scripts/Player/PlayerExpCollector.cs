@@ -29,7 +29,7 @@ public class PlayerExpCollector : MonoBehaviour
         if (collision.TryGetComponent(out ExpGem expGem))
         {
             expGem.DisableExpGem();
-            expGem.gameObject.SetActive(false);
+
             LevelManager.Ins.LMExperience.AddExpPoints(expGem.Data.ExpPoints);
         }
     }

@@ -1,78 +1,54 @@
-using KH;
-using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.AdaptivePerformance.Provider;
 
-public class PlayerMainGun : IKHIUnityMethods
+public class EnemyStats : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public PlayerMainGun(Player newOwner)
+    public EnemyStats(Enemy newOwner)
     {
         _owner = newOwner;
-
     }
 
-    private readonly Player _owner;
+    private readonly Enemy _owner;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-
+    public float moveSpeed;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region UNITY EVENTS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public void IUpdate()
+    public void IAwake()
     {
-        ClickToShoot();
+        moveSpeed = _owner.Data.DefaultMoveSpeed;
     }
 
-    public void IAwake() { }
-    public void IStart() { }
-    public void IFixedUpdate() { }
     public void IOnEnable() { }
     public void IOnDisable() { }
+    public void IStart() { }
+    public void IUpdate() { }
+    public void IFixedUpdate() { }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region PRIVATE
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    private void ClickToShoot()
-    {
-        if (Mouse.current.leftButton.isPressed && !_owner.Stats.IsAttacking)
-        {
-            _owner.Stats.IsAttacking = true;
 
-            _owner.PAnimator.AnimAttack(
-                Kh.GetDir(_owner.transform.position, Kh.GetMouseWorldPos()));
-        }
-    }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region PUBLIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public void FireBullet()
-    {
-        Vector2 playerToMouseDir = Kh.GetDir(_owner.transform.position, Kh.GetMouseWorldPos());
 
-        Bullet.GetOrCreateBullet(Helper.DirToBulletSpawnPoint(playerToMouseDir, _owner.Data.BulletSpawnPoints) + _owner.transform.position,
-                                 Quaternion.Euler(0, 0, Kh.KHGetAngle(playerToMouseDir)),
-                                 new BulletStates(_owner.Stats.bulletMoveSpeed,
-                                                  _owner.Stats.bulletDamage,
-                                                  _owner.Stats.bulletKnockBackForce,
-                                                  playerToMouseDir,
-                                                  GameTags.ENEMY),
-                                 _owner.Data.DefaultBulletData.prefab);
-    }
 
     #endregion
 }

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Player Bullet 1
   m_EditorClassIdentifier: Assembly-CSharp::BulletData
   prefab: {fileID: 3417091988106208025, guid: a4dff757cc2e54ac4870cf2efea45111, type: 3}
+  defaultKnockBackForce: 100
   defaultDamage:
     physical:
       damage: 6
@@ -26,6 +27,6 @@ MonoBehaviour:
       subDamage: 0
       duration: 0
       interval: 0
-  defaultMoveSpeed: 200
+  defaultMoveSpeed: 250
   defaultSpeedReduction: 0.1
   defaultBulletType: 0

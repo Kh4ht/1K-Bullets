@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using KH;
 using Michsky.UI.MTP;
 using NaughtyAttributes;
@@ -45,9 +46,7 @@ public class LevelUIManager : MonoBehaviour
 
     [HorizontalLine, Header("UPGRADE CARDS")]
     public KHUI cardsContainer;
-    public UpgradeCard card1;
-    public UpgradeCard card2;
-    public UpgradeCard card3;
+    public List<UpgradeCard> cards;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -56,14 +55,14 @@ public class LevelUIManager : MonoBehaviour
 
     private void OnEnable()
     {
-        LevelManager.Ins.LMExperience.OnExpLevelChanged += UpdateExpLevelTxt;
-        LevelManager.Ins.LMExperience.OnExpPointsChanged += UpdateExpPointsSlider;
+        LevelManager.Ins.LMExperience.OnExpLevelChanged += Ins.UpdateExpLevelTxt;
+        LevelManager.Ins.LMExperience.OnExpPointsChanged += Ins.UpdateExpPointsSlider;
     }
 
     private void OnDisable()
     {
-        LevelManager.Ins.LMExperience.OnExpLevelChanged -= UpdateExpLevelTxt;
-        LevelManager.Ins.LMExperience.OnExpPointsChanged -= UpdateExpPointsSlider;
+        LevelManager.Ins.LMExperience.OnExpLevelChanged -= Ins.UpdateExpLevelTxt;
+        LevelManager.Ins.LMExperience.OnExpPointsChanged -= Ins.UpdateExpPointsSlider;
     }
 
     private void Awake()

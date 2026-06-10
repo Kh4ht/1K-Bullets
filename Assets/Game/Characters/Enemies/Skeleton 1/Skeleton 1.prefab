@@ -124,7 +124,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDamping: 0
+  m_LinearDamping: 15
   m_AngularDamping: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
@@ -273,6 +273,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3358996354549220287}
     m_Modifications:
+    - target: {fileID: 98717936444007262, guid: 1c65a32f203c9426083eb7e9de29de1a, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3649769150898624764, guid: 1c65a32f203c9426083eb7e9de29de1a, type: 3}
       propertyPath: m_Interactable
       value: 0

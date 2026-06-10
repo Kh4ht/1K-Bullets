@@ -1,3 +1,4 @@
+using KH;
 using UnityEngine;
 
 public class EnemyAnimator : IKHIUnityMethods
@@ -6,16 +7,12 @@ public class EnemyAnimator : IKHIUnityMethods
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public EnemyAnimator(Enemy newOwner, SliderController healthBar, Animator animator)
+    public EnemyAnimator(Enemy newOwner)
     {
         _owner = newOwner;
-        _healthBar = healthBar.GetComponent<RectTransform>();
-        _animator = animator;
     }
 
     private readonly Enemy _owner;
-    private readonly RectTransform _healthBar;
-    private readonly Animator _animator;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -35,12 +32,14 @@ public class EnemyAnimator : IKHIUnityMethods
 
     public void IAwake()
     {
-        _animator.speed = GameConst.ANIMATOR_DEFAULT_SPEED;
+        _owner.Animator.speed = GameConst.ANIMATOR_DEFAULT_SPEED;
     }
 
     public void IUpdate()
     {
+        SetAnimatorSpeed();
 
+        _owner.SpriteR.KHUpdateSortingOrderBasedOnYPos(_owner.transform.position.y);
     }
 
     public void IStart() { }
@@ -50,29 +49,27 @@ public class EnemyAnimator : IKHIUnityMethods
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PRIVATE METHODS
+    #region PRIVATE
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-
+    private void SetAnimatorSpeed()
+    {
+        _owner.Animator.speed = _owner.Rb2d.linearVelocity.MoveSpdToAnimatorSpd();
+    }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PUBLIC METHODS
+    #region PUBLIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-
-    public void SetAnimatorSpeed(float animatorSpeed)
-    {
-        _animator.speed = animatorSpeed;
-    }
 
     public void AnimRunning(bool isRunning)
     {
-        _animator.SetBool(IS_RUN, isRunning);
+        _owner.Animator.SetBool(IS_RUN, isRunning);
     }
 
     public void AnimMoveDir(Vector2 dir)
     {
-        _animator.SetFloat(DIRECTION, (float)Helper.V2ToAnimDir(dir));
+        _owner.Animator.SetFloat(DIRECTION, (float)Helper.V2ToAnimDir(dir));
     }
 
 

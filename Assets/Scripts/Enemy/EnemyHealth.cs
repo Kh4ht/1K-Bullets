@@ -30,7 +30,7 @@ public class EnemyHealth : IKHIUnityMethods
     {
         HealthCrtl.AddOnHealthChangedListener(OnHealthChanged);
         HealthCrtl.AddOnHealthDecreaseListener(OnHealthDecreased);
-        HealthCrtl.AddOnMaxHealthListener(OnMaxHealth);
+        HealthCrtl.AddOnMaxHealthReachedListener(OnMaxHealth);
         HealthCrtl.AddOnDeathListener(OnDeath);
         HealthCrtl.AddOnReviveListener(OnRevive);
     }
@@ -38,7 +38,7 @@ public class EnemyHealth : IKHIUnityMethods
     {
         HealthCrtl.RemoveOnHealthChangedListener(OnHealthChanged);
         HealthCrtl.RemoveOnHealthDecreaseListener(OnHealthDecreased);
-        HealthCrtl.RemoveOnMaxHealthListener(OnMaxHealth);
+        HealthCrtl.RemoveOnMaxHealthReachedListener(OnMaxHealth);
         HealthCrtl.RemoveOnDeathListener(OnDeath);
         HealthCrtl.RemoveOnReviveListener(OnRevive);
     }

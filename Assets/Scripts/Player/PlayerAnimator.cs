@@ -1,3 +1,4 @@
+using KH;
 using UnityEngine;
 
 public class PlayerAnimator : IKHIUnityMethods
@@ -18,9 +19,6 @@ public class PlayerAnimator : IKHIUnityMethods
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-
-    public float MoveAnimationSpeed { get; private set; }
-    public float AttackAnimationSpeed { get; private set; }
 
     // float
     private readonly int DIRECTION = Animator.StringToHash("Direction");
@@ -47,39 +45,35 @@ public class PlayerAnimator : IKHIUnityMethods
         _owner.Animator.speed = GameConst.ANIMATOR_DEFAULT_SPEED;
     }
 
-    public void IStart()
+    public void IUpdate()
     {
-        AttackAnimationSpeed = _owner.Data.DefaultAttackSpeed;
+        SetMoveAnimationSpeed();
+
+        _owner.SpriteR.KHUpdateSortingOrderBasedOnYPos(_owner.transform.position.y);
     }
 
-    public void IUpdate() { }
+    public void IStart() { }
     public void IFixedUpdate() { }
     public void IOnEnable() { }
     public void IOnDisable() { }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PRIVATE METHODS
+    #region PRIVATE
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
+    private void SetMoveAnimationSpeed()
+    {
+        if (_owner.Stats.IsAttacking)
+            return;
 
+        _owner.Animator.speed = _owner.Rb2d.linearVelocity.MoveSpdToAnimatorSpd();
+    }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PUBLIC METHODS
+    #region PUBLIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-
-    public void SetMoveAnimationSpeed(float speed)
-    {
-        MoveAnimationSpeed = speed;
-        _owner.Animator.speed = MoveAnimationSpeed;
-    }
-
-    public void SetAttackAnimationSpeed(float speed)
-    {
-        AttackAnimationSpeed = speed;
-        _owner.Animator.speed = AttackAnimationSpeed;
-    }
 
     public void AnimRunning(bool isRunning)
     {

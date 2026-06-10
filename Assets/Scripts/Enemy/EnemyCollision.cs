@@ -44,7 +44,6 @@ public class EnemyCollision : IKHIUnityMethods
         _collTimer.Update();
     }
 
-    // Unused
     public void IFixedUpdate() { }
     public void IOnEnable() { }
     public void IOnDisable() { }

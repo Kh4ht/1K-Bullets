@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using KH;
-
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(CapsuleCollider2D))]
+
+[RequireComponent(typeof(SpriteRenderer))]
 public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -16,13 +17,15 @@ public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
 
     // Components
     public Rigidbody2D Rb2d { get; private set; }
-    private Animator _animator;
+    public SpriteRenderer SpriteR { get; private set; }
+    public Animator Animator { get; private set; }
 
     // Systems
     public EnemyMove EMove { get; private set; }
     public EnemyAnimator EAnimator { get; private set; }
     public EnemyHealth EHealth { get; private set; }
     public EnemyCollision ECollision { get; private set; }
+    public EnemyStats Stats { get; private set; }
 
     private readonly List<IKHIUnityMethods> _systems = new();
 
@@ -48,6 +51,8 @@ public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
 
         Rb2d.gravityScale = 0;
         Rb2d.freezeRotation = true;
+        Rb2d.linearDamping = GameConst.LINEAR_DAMPING;
+
         tag = GameTags.ENEMY;
     }
 
@@ -68,16 +73,15 @@ public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
     private void Awake()
     {
         Rb2d = GetComponent<Rigidbody2D>();
-        _animator = GetComponent<Animator>();
+        Animator = GetComponent<Animator>();
+        SpriteR = GetComponent<SpriteRenderer>();
 
         _systems.AddRange(new IKHIUnityMethods[]
         {
-            EMove = new(this,
-                        rb2d: Rb2d),
+            Stats = new(this),
+            EMove = new(this),
             ECollision = new(this),
-            EAnimator = new(this,
-                            healthBar: _healthBar,
-                            animator: _animator),
+            EAnimator = new(this),
             EHealth = new(this,
                           healthBar: _healthBar),
         });

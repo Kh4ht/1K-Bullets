@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Skeleton 1
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   _prefab: {fileID: 1606980052867324036, guid: 2367e9cbc8d00472eae5e3764aa5ac64, type: 3}
-  _defaultMoveSpeed: 40
+  _defaultMoveSpeed: 800
   defaultMaxHealth: 10
   _defaultDamage:
     physical:

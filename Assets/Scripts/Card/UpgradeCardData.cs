@@ -10,7 +10,7 @@ using UnityEngine;
 public class UpgradeCardData : ScriptableObject
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region INSPECTOR FIELDS
+    #region INSPECTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     [ShowAssetPreview(100, 100)] public Sprite sprite;
@@ -31,7 +31,16 @@ public class UpgradeCardData : ScriptableObject
     [Space] public bool addMoveSpeed;
     [Range(0.02f, 1f), ShowIf("addMoveSpeed")] public float bonusMoveSpeed = 0.02f;
 
-    // Methods
+    [Space] public bool addBulletMoveSpeed;
+    [Range(0.02f, 1f), ShowIf("addBulletMoveSpeed")] public float bonusBulletMoveSpeed = 0.02f;
+
+    [Space] public bool addAttackSpeed;
+    [Range(0.02f, 1f), ShowIf("addAttackSpeed")] public float bonusAttackSpeed = 0.02f;
+
+    #endregion
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+    #region METHODS
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     public void ApplyUpgrade()
     {
@@ -40,14 +49,23 @@ public class UpgradeCardData : ScriptableObject
         if (addMaxHealth)
         {
             player.PHealth.HealthCrtl.MaxHealth += bonusMaxHealth;
+            player.PHealth.HealthCrtl.AddHealth(bonusMaxHealth);
         }
         if (addPhysicalDamage)
         {
-            player.States.bulletDamage.physical.damage += bonusPhysicalDamage;
+            player.Stats.bulletDamage.physical.damage += bonusPhysicalDamage;
         }
         if (addMoveSpeed)
         {
-            player.States.MoveSpeed *= 1 + bonusMoveSpeed;
+            player.Stats.MoveSpeed *= 1 + bonusMoveSpeed;
+        }
+        if (addBulletMoveSpeed)
+        {
+            player.Stats.bulletMoveSpeed *= 1 + bonusBulletMoveSpeed;
+        }
+        if (addAttackSpeed)
+        {
+            player.Stats.attackSpeed *= 1 + bonusAttackSpeed;
         }
     }
 
@@ -70,6 +88,14 @@ public class UpgradeCardData : ScriptableObject
         if (addMoveSpeed)
         {
             impactTexts.Add($"+ {bonusMoveSpeed:P0} Move Speed");
+        }
+        if (addBulletMoveSpeed)
+        {
+            impactTexts.Add($"+ {bonusBulletMoveSpeed:P0} Bullet Speed");
+        }
+        if (addAttackSpeed)
+        {
+            impactTexts.Add($"+ {bonusAttackSpeed:P0} Attack Speed");
         }
 
         impact = string.Join("\n", impactTexts);

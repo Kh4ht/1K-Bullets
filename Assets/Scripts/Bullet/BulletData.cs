@@ -11,11 +11,12 @@ public class BulletData : ScriptableObject
     [Header("PREFAB")]
     public Bullet prefab;
 
-    [HorizontalLine, Header("STATES")]
+    [HorizontalLine, Header("DAMAGE")]
+    public int defaultKnockBackForce;
     public KHDamage defaultDamage;
-    [Min(0)] public float defaultMoveSpeed = 100f;
-    [Range(0f, 1f)] public float defaultSpeedReduction = 0.1f;
 
+    [HorizontalLine, Header("STATES")]
+    [Min(0)] public float defaultMoveSpeed = 100f;
 
     [HorizontalLine, Header("TYPE")]
     public GameEnums.BulletType defaultBulletType = GameEnums.BulletType.Straight;

@@ -4,7 +4,7 @@ using UnityEngine;
 public static class Helper
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region Vector2ToAnimDir
+    #region V2ToAnimDir
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     public static GameEnums.AnimDir V2ToAnimDir(Vector2 vector2)
@@ -54,7 +54,7 @@ public static class Helper
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region Vector2ToAnimDir
+    #region V2ToAnimDirIndex
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     public static GameEnums.AnimDirIndex V2ToAnimDirIndex(Vector2 vector2)
@@ -194,16 +194,13 @@ public static class Helper
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region MinutesToSeconds
+    #region MoveSpdToAnimatorSpdForEnemy
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public static float MoveSpdToAnimatorSpd(this float MoveSpeed)
+    public static float MoveSpdToAnimatorSpd(this Vector2 velocity)
     {
-        return MoveSpeed / 25f;
-
+        return velocity.sqrMagnitude * 2;
     }
 
     #endregion
-
-
 }

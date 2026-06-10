@@ -10,12 +10,14 @@ public class BulletStates : IKHIUnityMethods
     {
         _owner = newOwner;
     }
+
     public BulletStates(float moveSpeed,
-                            KHDamage damage,
-                            Vector2 dir = default,
-                            string targetTag = default)
+                        KHDamage damage,
+                        int knockBackForce,
+                        Vector2 dir = default,
+                        string targetTag = default)
     {
-        ResetStates(moveSpeed, damage, dir, targetTag);
+        ResetStates(moveSpeed, damage, knockBackForce, dir, targetTag);
     }
 
     private readonly Bullet _owner;
@@ -25,10 +27,11 @@ public class BulletStates : IKHIUnityMethods
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
+    public int knockBackForce;
     public float moveSpeed;
+    public string targetTag;
     public KHDamage damage;
     public Vector2 dir;
-    public string targetTag;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -38,7 +41,8 @@ public class BulletStates : IKHIUnityMethods
     public void IAwake()
     {
         ResetStates(_owner.Data.defaultMoveSpeed,
-                    _owner.Data.defaultDamage);
+                    _owner.Data.defaultDamage,
+                    _owner.Data.defaultKnockBackForce);
     }
 
     public void IOnEnable() { }
@@ -61,21 +65,24 @@ public class BulletStates : IKHIUnityMethods
 
     public void ResetStates(float moveSpeed,
                             KHDamage damage,
+                            int knockBackForce,
                             Vector2 dir = default,
                             string targetTag = default)
     {
         this.moveSpeed = moveSpeed;
         this.damage = damage;
+        this.knockBackForce = knockBackForce;
         this.dir = dir;
         this.targetTag = targetTag;
     }
 
     public void ResetStates(BulletStates bulletStates)
     {
-        this.moveSpeed = bulletStates.moveSpeed;
-        this.damage = bulletStates.damage;
-        this.dir = bulletStates.dir;
-        this.targetTag = bulletStates.targetTag;
+        ResetStates(bulletStates.moveSpeed,
+                    bulletStates.damage,
+                    bulletStates.knockBackForce,
+                    bulletStates.dir,
+                    bulletStates.targetTag);
     }
     #endregion
 }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(CapsuleCollider2D))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class Player : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -11,13 +12,14 @@ public class Player : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
     // Components
     public Rigidbody2D Rb2d { get; private set; }
     public Animator Animator { get; private set; }
+    public SpriteRenderer SpriteR { get; private set; }
 
     // Systems
     public PlayerMove PMove { get; private set; }
     public PlayerAnimator PAnimator { get; private set; }
     public PlayerMainGun PMainGun { get; private set; }
     public PlayerHealth PHealth { get; private set; }
-    public PlayerStates States { get; private set; }
+    public PlayerStats Stats { get; private set; }
 
     private readonly List<IKHIUnityMethods> _systems = new();
 
@@ -26,7 +28,7 @@ public class Player : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region INSPECTOR FIELDS
+    #region INSPECTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
     [SerializeField] private PlayerData _data;
@@ -42,6 +44,8 @@ public class Player : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
 
         Rb2d.gravityScale = 0;
         Rb2d.freezeRotation = true;
+        Rb2d.linearDamping = GameConst.LINEAR_DAMPING;
+
         tag = GameTags.PLAYER;
     }
 
@@ -63,20 +67,15 @@ public class Player : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
     {
         Rb2d = GetComponent<Rigidbody2D>();
         Animator = GetComponent<Animator>();
-
-        States = new(this);
-        PAnimator = new(this);
-        PHealth = new(this);
-        PMove = new(this);
-        PMainGun = new(this);
+        SpriteR = GetComponent<SpriteRenderer>();
 
         _systems.AddRange(new IKHIUnityMethods[]
         {
-            States,
-            PAnimator,
-            PHealth,
-            PMove,
-            PMainGun
+            Stats = new(this),
+            PAnimator = new(this),
+            PHealth = new(this),
+            PMove = new(this),
+            PMainGun = new(this),
         });
 
         _systems.AwakeAll();
@@ -112,14 +111,14 @@ public class Player : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PUBLIC METHODS
+    #region PUBLIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
 
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region STATIC METHODS
+    #region STATIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e08e79a250044c728d058c2b8f4ac33, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
-  _defaultMoveSpeed: 60
+  _defaultMoveSpeed: 1000
   _defaultAttackSpeed: 2
   _defaultMaxHealth: 100
   _defaultBulletData: {fileID: 11400000, guid: b3f44e393fe564b788a8d5ceeaf4ffab, type: 2}

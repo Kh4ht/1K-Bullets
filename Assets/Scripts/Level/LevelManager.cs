@@ -80,6 +80,7 @@ public class LevelManager : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdat
         // Reset Static Fields
         Enemy.ResetStaticFields();
         Bullet.ResetStaticFields();
+        ExpGem.ResetStaticFields();
 
         LMEnemySpawner = new LMEnemySpawner(this,
                                             levelEnemiesData: _data.LevelEnemiesData,
@@ -162,12 +163,20 @@ public class LevelManager : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdat
     #region PUBLIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    [Button]
+#if UNITY_EDITOR
+    [Button("<color='cyan'><b>AddExpPoints</b></color>", EButtonEnableMode.Playmode)]
     public void AddExpPoints()
     {
         LMExperience.AddExpPoints(1);
     }
 
+    [Button("<b>ShowUpgradeCards</b>", EButtonEnableMode.Editor)]
+    public void ShowUpgradeCards()
+    {
+        LMExperience = new(this);
+        LMExperience.ShowUpgradeCards();
+    }
+#endif
     public void SetLevelActive(bool levelActive)
     {
         LevelActive = levelActive;

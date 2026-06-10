@@ -84,12 +84,12 @@ public class PlayerMove : IKHIUnityMethods
 
     private void Move()
     {
-        if (Dir == Vector2.zero && _owner.Rb2d.linearVelocity == Vector2.zero)
+        if (_owner.PHealth.HealthCrtl.IsDead)
             return;
 
-        _owner.Rb2d.linearVelocity = _owner.States.MoveSpeed
-                                     * Time.fixedDeltaTime
-                                     * Dir.normalized;
+        _owner.Rb2d.AddForce(_owner.Stats.MoveSpeed
+                             * Time.fixedDeltaTime
+                             * Dir.normalized);
     }
 
     #endregion

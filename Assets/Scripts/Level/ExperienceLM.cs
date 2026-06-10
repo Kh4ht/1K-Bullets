@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using KH;
 
 public class LMExperience : IKHIUnityMethods
 {
@@ -54,21 +56,23 @@ public class LMExperience : IKHIUnityMethods
         OnExpLevelChanged?.Invoke(_expLevel);
     }
 
-    private void ShowUpgradeCards()
-    {
-        _owner.SetLevelActive(false);
-
-        LevelUIManager.Ins.card1.SetRandomUpgrade();
-        LevelUIManager.Ins.card2.SetRandomUpgrade();
-        LevelUIManager.Ins.card3.SetRandomUpgrade();
-
-        LevelUIManager.Ins.cardsContainer.KH_Show_Pop();
-    }
-
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region PUBLIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    public void ShowUpgradeCards()
+    {
+        _owner.SetLevelActive(false);
+
+        int cardsCount = LevelUIManager.Ins.cards.Count;
+
+        List<UpgradeCardData> randomCards = GameManager.Ins.Data.upgradeCardDatas.KHPickRandom(cardsCount);
+
+        LevelUIManager.Ins.cards.KHForEach((c, i) => c.SetCard(randomCards[i]));
+
+        LevelUIManager.Ins.cardsContainer.KH_Show_Pop();
+    }
 
     public void AddExpPoints(int amount)
     {

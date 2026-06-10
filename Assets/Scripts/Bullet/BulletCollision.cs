@@ -1,3 +1,4 @@
+using KH;
 using UnityEngine;
 
 public class BulletCollision : IKHIUnityMethods
@@ -47,6 +48,12 @@ public class BulletCollision : IKHIUnityMethods
     private void HitEnemy(Enemy enemy)
     {
         enemy.EHealth.HealthCrtl.ApplyDamage(_owner.States.damage);
+
+        if (!enemy.EHealth.HealthCrtl.IsDead)
+        {
+            enemy.Rb2d.AddForce(_owner.States.knockBackForce * Kh.GetDir(_owner.transform.position,
+                                                                         enemy.transform.position));
+        }
 
         AfterHit();
     }

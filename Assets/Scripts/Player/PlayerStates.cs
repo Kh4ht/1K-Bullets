@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class PlayerStates : IKHIUnityMethods
+public class PlayerStats : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public PlayerStates(Player newOwner)
+    public PlayerStats(Player newOwner)
     {
         _owner = newOwner;
     }
@@ -18,10 +18,25 @@ public class PlayerStates : IKHIUnityMethods
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
+    private bool _isAttacking;
+    public bool IsAttacking
+    {
+        get => _isAttacking;
+        set
+        {
+            _isAttacking = value;
+
+            if (_isAttacking)
+            {
+                _owner.Animator.speed = attackSpeed;
+            }
+        }
+    }
+    public int bulletKnockBackForce;
     public float bulletMoveSpeed;
+    public float attackSpeed;
     public KHDamage bulletDamage;
 
-    private float _originalSpeed;
     private float _moveSpeed;
     public float MoveSpeed
     {
@@ -32,11 +47,6 @@ public class PlayerStates : IKHIUnityMethods
                 return;
 
             _moveSpeed = value;
-            _originalSpeed = _moveSpeed;
-
-            // sync move speed with animation speed.
-            _owner.PAnimator.SetMoveAnimationSpeed(
-                _moveSpeed.MoveSpdToAnimatorSpd());
         }
     }
 
@@ -48,8 +58,11 @@ public class PlayerStates : IKHIUnityMethods
     public void IAwake()
     {
         bulletMoveSpeed = _owner.Data.DefaultBulletData.defaultMoveSpeed;
+        bulletKnockBackForce = _owner.Data.DefaultBulletData.defaultKnockBackForce;
+
         bulletDamage = _owner.Data.DefaultBulletData.defaultDamage;
         MoveSpeed = _owner.Data.DefaultMoveSpeed;
+        attackSpeed = _owner.Data.DefaultAttackSpeed;
     }
 
     public void IOnEnable() { }
@@ -70,15 +83,7 @@ public class PlayerStates : IKHIUnityMethods
     #region PUBLIC
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public void ApplySpeedReductionWhenAttack()
-    {
-        _owner.States._moveSpeed *= 1 - _owner.Data.DefaultBulletData.defaultSpeedReduction;
-    }
 
-    public void RestoreOriginalMoveSpeed()
-    {
-        _owner.States.MoveSpeed = _originalSpeed;
-    }
 
     #endregion
 }
