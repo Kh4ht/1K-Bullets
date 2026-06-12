@@ -46,9 +46,9 @@ public class PlayerMainGun : IKHIUnityMethods
 
     private void ClickToShoot()
     {
-        if (Mouse.current.leftButton.isPressed && !_owner.Stats.IsAttacking)
+        if (Mouse.current.leftButton.isPressed && !_owner.Stats.isAttacking)
         {
-            _owner.Stats.IsAttacking = true;
+            _owner.Stats.isAttacking = true;
 
             _owner.PAnimator.AnimAttack(
                 Kh.GetDir(_owner.transform.position, Kh.GetMouseWorldPos()));

@@ -62,24 +62,20 @@ public class EnemyMove : IKHIUnityMethods
 
     private void UpdateDir()
     {
-        if (_owner == null)
-        {
-            Debug.LogError("OWNER DESTROYED");
-            return;
-        }
-
         Dir = Kh.GetDir(_owner, _targetPlayer);
+
+        _owner.EAnimator.AnimDir(Dir);
 
         if (Dir != Vector2.zero)
         {
             _owner.EAnimator.AnimRunning(true);
-            _owner.EAnimator.AnimMoveDir(Dir);
         }
     }
 
     private void Move()
     {
-        if (_owner.EHealth.HealthCrtl.IsDead)
+        if (_owner.EHealth.HealthCrtl.IsDead
+            || _owner.Stats.isAttacking)
             return;
 
         _owner.Rb2d.AddForce(_owner.Stats.moveSpeed

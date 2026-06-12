@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerAttackBehaviour : StateMachineBehaviour
 {
     private Player player;
-    private bool _fired;
+    private bool fired;
     private readonly int fireFrame = 8;
     private int totalFrames;
 
@@ -20,7 +20,7 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
         if (player == null)
             player = animator.GetComponent<Player>();
 
-        _fired = false;
+        fired = false;
 
         AnimationClip clip = animator.GetCurrentAnimatorClipInfo(layerIndex)[0].clip;
         totalFrames = Mathf.RoundToInt(clip.length * clip.frameRate);
@@ -44,9 +44,9 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
         int currentFrame = Mathf.FloorToInt(
             (stateInfo.normalizedTime % 1f) * totalFrames);
 
-        if (!_fired && currentFrame >= fireFrame)
+        if (!fired && currentFrame >= fireFrame)
         {
-            _fired = true;
+            fired = true;
             player.PMainGun.FireBullet();
         }
     }
@@ -61,7 +61,7 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
         AnimatorStateInfo stateInfo,
         int layerIndex)
     {
-        player.Stats.IsAttacking = false;
+        player.Stats.isAttacking = false;
     }
 
     #endregion

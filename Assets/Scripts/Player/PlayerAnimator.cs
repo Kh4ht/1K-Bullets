@@ -47,7 +47,7 @@ public class PlayerAnimator : IKHIUnityMethods
 
     public void IUpdate()
     {
-        SetMoveAnimationSpeed();
+        UpdateAnimatorSpeed();
 
         _owner.SpriteR.KHUpdateSortingOrderBasedOnYPos(_owner.transform.position.y);
     }
@@ -62,12 +62,17 @@ public class PlayerAnimator : IKHIUnityMethods
     #region PRIVATE
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    private void SetMoveAnimationSpeed()
+    private void UpdateAnimatorSpeed()
     {
-        if (_owner.Stats.IsAttacking)
-            return;
-
-        _owner.Animator.speed = _owner.Rb2d.linearVelocity.MoveSpdToAnimatorSpd();
+        if (_owner.Stats.isAttacking)
+        {
+            if (_owner.Animator.speed != _owner.Stats.attackSpeed)
+                _owner.Animator.speed = _owner.Stats.attackSpeed;
+        }
+        else
+        {
+            _owner.Animator.speed = _owner.Rb2d.linearVelocity.MoveSpdToAnimatorSpd();
+        }
     }
 
     #endregion

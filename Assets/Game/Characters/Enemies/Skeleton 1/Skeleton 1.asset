@@ -15,17 +15,22 @@ MonoBehaviour:
   _prefab: {fileID: 1606980052867324036, guid: 2367e9cbc8d00472eae5e3764aa5ac64, type: 3}
   _defaultMoveSpeed: 800
   defaultMaxHealth: 10
-  _defaultDamage:
-    physical:
-      damage: 3
-    fire:
-      damage: 0
-      subDamage: 0
-      duration: 0
-      interval: 0
-    poison:
-      damage: 0
-      subDamage: 0
-      duration: 0
-      interval: 0
   _expGemData: {fileID: 11400000, guid: 2118b23a908d344a6a106e9707c60a10, type: 2}
+  hasMeleeAttack1: 1
+  meleeAttack1:
+    damage:
+      physical:
+        damage: 3
+      fire:
+        damage: 0
+        subDamage: 0
+        duration: 0
+        interval: 0
+      poison:
+        damage: 0
+        subDamage: 0
+        duration: 0
+        interval: 0
+    targetDetectionRadius: 0.42
+    attackRadius: 0.51
+    speed: 2

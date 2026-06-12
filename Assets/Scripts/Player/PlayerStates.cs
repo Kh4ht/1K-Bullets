@@ -18,20 +18,7 @@ public class PlayerStats : IKHIUnityMethods
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    private bool _isAttacking;
-    public bool IsAttacking
-    {
-        get => _isAttacking;
-        set
-        {
-            _isAttacking = value;
-
-            if (_isAttacking)
-            {
-                _owner.Animator.speed = attackSpeed;
-            }
-        }
-    }
+    public bool isAttacking;
     public int bulletKnockBackForce;
     public float bulletMoveSpeed;
     public float attackSpeed;

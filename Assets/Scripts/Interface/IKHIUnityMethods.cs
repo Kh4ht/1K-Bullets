@@ -3,17 +3,12 @@ using KH;
 
 public interface IKHIUnityMethods
 {
-    void IOnEnable();
-
-    void IOnDisable();
-
-    void IAwake();
-
-    void IStart();
-
-    void IUpdate();
-
-    void IFixedUpdate();
+    void IOnEnable() { }
+    void IOnDisable() { }
+    void IAwake() { }
+    void IStart() { }
+    void IUpdate() { }
+    void IFixedUpdate() { }
 }
 
 public static class KHHelper

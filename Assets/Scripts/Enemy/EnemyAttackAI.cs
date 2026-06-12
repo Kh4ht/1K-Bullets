@@ -1,13 +1,13 @@
 using KH;
 using UnityEngine;
 
-public class EnemyCollision : IKHIUnityMethods
+public class EnemyAttackAI : IKHIUnityMethods
 {
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region CONSTRUCTOR
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public EnemyCollision(Enemy newOwner)
+    public EnemyAttackAI(Enemy newOwner)
     {
         _owner = newOwner;
     }
@@ -19,21 +19,13 @@ public class EnemyCollision : IKHIUnityMethods
     #region FIELDS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    private readonly KHTimer _collTimer = new();
     private Player _targetPlayer;
-
-    public KHDamage Damage { get; private set; }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
     #region UNITY EVENTS
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public void IAwake()
-    {
-        Damage = _owner.Data.DefaultDamage;
-
-    }
     public void IStart()
     {
         _targetPlayer = LevelManager.Ins.Player;
@@ -41,43 +33,52 @@ public class EnemyCollision : IKHIUnityMethods
 
     public void IUpdate()
     {
-        _collTimer.Update();
-    }
-
-    public void IFixedUpdate() { }
-    public void IOnEnable() { }
-    public void IOnDisable() { }
-
-    #endregion
-    // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PRIVATE METHODS
-    // █████████████████████████████████████████████████████████████████████████████████████████████████
-
-    private void HitPlayer(Player player)
-    {
-        player.PHealth.HealthCrtl.ApplyDamage(Damage);
-
-        if (player.PHealth.HealthCrtl.IsDead)
-        {
-            player.PAnimator.AnimDeathTrigger(-_owner.EMove.Dir);
-        }
+        TryApplyAttack();
     }
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
-    #region PUBLIC METHODS
+    #region PRIVATE
     // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public void OnCollWithPlayer(Collision2D collision)
+    private void TryApplyAttack()
     {
-        if (!collision.gameObject.CompareTag(GameTags.PLAYER))
+        if (_owner.Stats.isAttacking)
             return;
 
-        if (_collTimer.DidExceed(GameConst.COLLISION_HIT_CD))
-        {
-            HitPlayer(_targetPlayer);
+        MeleeAttack1();
+    }
 
-            _collTimer.Reset();
+    private void MeleeAttack1()
+    {
+        if (!_owner.Data.hasMeleeAttack1)
+            return;
+
+        // What Trigger the Attack?
+        if (!Kh.SqrDistanceIsLessThan(_owner.transform.position,
+                                     _targetPlayer.transform.position,
+                                     _owner.Data.meleeAttack1.targetDetectionRadius))
+        {
+            return;
+        }
+
+        _owner.Stats.attackAnimatorSpeed = _owner.Data.meleeAttack1.speed;
+        _owner.EAnimator.TriggerAttack1Anim();
+        _owner.Stats.isAttacking = true;
+    }
+
+    #endregion
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+    #region PUBLIC
+    // █████████████████████████████████████████████████████████████████████████████████████████████████
+
+    public void DamagePlayer(KHDamage damage)
+    {
+        _targetPlayer.PHealth.HealthCrtl.ApplyDamage(damage);
+
+        if (_targetPlayer.PHealth.HealthCrtl.IsDead)
+        {
+            _targetPlayer.PAnimator.AnimDeathTrigger(-_owner.EMove.Dir);
         }
     }
 

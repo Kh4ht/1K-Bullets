@@ -1,5 +1,6 @@
 using UnityEngine;
 using PrimeTween;
+using System.Collections;
 
 namespace KH
 {
@@ -7,11 +8,13 @@ namespace KH
     [RequireComponent(typeof(AudioSource), typeof(CanvasGroup))]
     public class KHUI : MonoBehaviour
     {
+
         // █████████████████████████████████████████████████████████████████████████████████████████████████
         #region Fields
         // █████████████████████████████████████████████████████████████████████████████████████████████████
         #endregion
 
+        private static WaitForSeconds _waitForSeconds1 = new(1f);
         private Vector3 _startScale;
         private Vector3 _startPos;
 
@@ -24,7 +27,7 @@ namespace KH
         private Tween _activeTween;
 
         // █████████████████████████████████████████████████████████████████████████████████████████████████
-        #region INSPECTOR FIELDS
+        #region INSPECTOR
         // █████████████████████████████████████████████████████████████████████████████████████████████████
 
 
@@ -60,12 +63,26 @@ namespace KH
         #region PRIVATE
         // █████████████████████████████████████████████████████████████████████████████████████████████████
 
-        private void RestoreDefaults()
+        private void RestoreDefaults(bool wait1Sec = false)
         {
             transform.localScale = _startScale;
             transform.localPosition = _startPos;
 
             _canvasGroup.alpha = 1;
+
+            if (wait1Sec)
+            {
+                StartCoroutine(DelayedInteractable());
+            }
+            else
+            {
+                _canvasGroup.interactable = true;
+            }
+        }
+
+        private IEnumerator DelayedInteractable()
+        {
+            yield return _waitForSeconds1;
             _canvasGroup.interactable = true;
         }
 
@@ -113,6 +130,7 @@ namespace KH
             if (!gameObject.activeInHierarchy)
             {
                 gameObject.SetActive(true);
+                _canvasGroup.interactable = false;
 
                 _audioSource.PlayOneShot(GameManager.Ins.Data.PopShow);
 
@@ -129,7 +147,7 @@ namespace KH
                     ease: Ease.OutBack
                 ).OnComplete(() =>
                 {
-                    RestoreDefaults();
+                    RestoreDefaults(true);
                 });
             }
         }
@@ -188,7 +206,7 @@ namespace KH
                     ease: Ease.OutCubic
                 ).OnComplete(() =>
                 {
-                    RestoreDefaults();
+                    RestoreDefaults(true);
                 });
             }
         }
@@ -248,7 +266,7 @@ namespace KH
                     ease: Ease.OutCubic
                 ).OnComplete(() =>
                 {
-                    RestoreDefaults();
+                    RestoreDefaults(true);
                 });
             }
         }
@@ -303,7 +321,7 @@ namespace KH
                     duration: GameConst.UI_SHOW_SPEED
                 ).OnComplete(() =>
                 {
-                    RestoreDefaults();
+                    RestoreDefaults(true);
                 });
             }
         }

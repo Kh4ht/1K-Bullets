@@ -13,6 +13,7 @@ public class Player : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
     public Rigidbody2D Rb2d { get; private set; }
     public Animator Animator { get; private set; }
     public SpriteRenderer SpriteR { get; private set; }
+    public CapsuleCollider2D Coll { get; private set; }
 
     // Systems
     public PlayerMove PMove { get; private set; }
@@ -68,6 +69,7 @@ public class Player : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
         Rb2d = GetComponent<Rigidbody2D>();
         Animator = GetComponent<Animator>();
         SpriteR = GetComponent<SpriteRenderer>();
+        Coll = GetComponent<CapsuleCollider2D>();
 
         _systems.AddRange(new IKHIUnityMethods[]
         {

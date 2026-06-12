@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using KH;
-[RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(CapsuleCollider2D))]
 
+[RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(CapsuleCollider2D))]
 [RequireComponent(typeof(SpriteRenderer))]
 public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
 {
@@ -24,13 +24,14 @@ public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
     public EnemyMove EMove { get; private set; }
     public EnemyAnimator EAnimator { get; private set; }
     public EnemyHealth EHealth { get; private set; }
-    public EnemyCollision ECollision { get; private set; }
+    public EnemyAttackAI EAttackAI { get; private set; }
     public EnemyStats Stats { get; private set; }
 
     private readonly List<IKHIUnityMethods> _systems = new();
 
     // Getters
     public EnemyData Data => _data;
+    public CircleCollider2D AttackColl => _attackColl;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -39,6 +40,7 @@ public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
 
     [SerializeField] private EnemyData _data;
     [SerializeField] private SliderController _healthBar;
+    [SerializeField] private CircleCollider2D _attackColl;
 
     #endregion
     // █████████████████████████████████████████████████████████████████████████████████████████████████
@@ -70,6 +72,12 @@ public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
         _systems.OnDisableAll();
     }
 
+    private void OnDrawGizmos()
+    {
+        if (Data.hasMeleeAttack1)
+            Gizmos.DrawWireSphere(transform.position, Data.meleeAttack1.targetDetectionRadius);
+    }
+
     private void Awake()
     {
         Rb2d = GetComponent<Rigidbody2D>();
@@ -80,13 +88,13 @@ public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
         {
             Stats = new(this),
             EMove = new(this),
-            ECollision = new(this),
+            EAttackAI = new(this),
             EAnimator = new(this),
             EHealth = new(this,
                           healthBar: _healthBar),
         });
 
-        _systems.KHForEach(p => p.IAwake());
+        _systems.AwakeAll();
     }
 
     private void Start()
@@ -99,7 +107,7 @@ public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
         if (!LevelManager.Ins.LevelActive)
             return;
 
-        _systems.KHForEach(p => p.IUpdate());
+        _systems.UpdateAll();
     }
 
     public void ManagedFixedUpdate()
@@ -107,12 +115,7 @@ public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
         if (!LevelManager.Ins.LevelActive)
             return;
 
-        _systems.KHForEach(p => p.IFixedUpdate());
-    }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        ECollision.OnCollWithPlayer(collision);
+        _systems.FixedUpdateAll();
     }
 
     #endregion
@@ -126,6 +129,7 @@ public class Enemy : ManagedBehaviour, IManagedUpdate, IManagedFixedUpdate
     private Enemy ResetEnemy()
     {
         EHealth.HealthCrtl.Revive();
+        Stats.ResetStats();
 
         return this;
     }
